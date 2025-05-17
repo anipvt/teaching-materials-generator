@@ -715,6 +715,7 @@
                 <button @click="downloadDOCX()" class="action-btn download" style="background-color: #2b579a;">
                     <i class="fas fa-file-word"></i> Download Word
                 </button>
+                
             </div>
         </main>
 
@@ -743,6 +744,7 @@
                 isDarkMode: false,
                 selectedTheme: 'divi',
                 slides: [],
+                showRawContent: false,
                 metadata: {
                     subject: 'Loading...',
                     topic: 'Loading...',
@@ -847,148 +849,263 @@
                 },
 
                 processData(data) {
-                    try {
-                        console.log("Processing data:", data);
-                        this.slides = [];
-                        
-                        // Add title slide
-                        this.slides.push({
-                            type: 'title',
-                            title: data.metadata?.topic || 'Presentation',
-                            content: ''
-                        });
-                        
-                        // Handle different possible data structures
-                        if (data.slides) {
-                            // Direct array of slides
-                            if (Array.isArray(data.slides)) {
-                                this.processSlides(data.slides);
-                            } 
-                            // Process topics array to create slides
-                            else if (data.slides.topics && Array.isArray(data.slides.topics)) {
-                                this.processTopics(data.slides.topics, data.slides.videoReferences);
-                            }
-                            // Single topic object
-                            else if (typeof data.slides === 'object' && data.slides.title) {
-                                this.processTopics([data.slides]);
-                            }
-                            else if (data.topicPlacards && Array.isArray(data.topicPlacards)) {
-                                console.log("Processing topicPlacards array with length:", data.topicPlacards.length);
-                                this.processTopics(data.topicPlacards);
-                            }
-                        } 
-                        // Handle direct array (no slides wrapper)
-                        else if (Array.isArray(data)) {
-                            const topics = data.filter(item => item.title).map(item => ({
-                                title: item.title,
-                                content: this.formatTopicContent(item),
-                                videoReference: item.videoReference
-                            }));
-                            this.processTopics(topics);
-                        }
-
-                        else if (data.topicPlacards && Array.isArray(data.topicPlacards)) {
-                            console.log("Processing root-level topicPlacards with length:", data.topicPlacards.length);
-                            this.processTopics(data.topicPlacards);
-                        }
-                        
-                        // Fallback: create at least one slide
-                        if (this.slides.length <= 1) {
-                            this.slides = [{
-                                title: "My Presentation",
-                                content: "<p>Unable to process presentation data. Please return to the generator page.</p>"
-                            }];
-                        }
-                        
-                        // Set metadata
-                        if (data.metadata) {
-                            this.metadata = data.metadata;
-                        } else {
-                            this.metadata = {
-                                subject: "Presentation",
-                                topic: "Topic"
-                            };
-                        }
-                        
-                        console.log("Processed slides:", this.slides);
-                    } catch (error) {
-                        console.error("Error processing presentation data:", error);
-                        this.slides = [{
-                            title: "Error",
-                            content: "<p>There was an error processing your presentation data. Please return to the generator page.</p>"
-                        }];
-                    }
-                },
+    try {
+        console.log("Processing data:", data);
+        this.slides = [];
+        
+        // Add title slide
+        this.slides.push({
+            type: 'title',
+            title: data.metadata?.topic || 'Presentation',
+            content: '' // Title slide doesn't need content
+        });
+        
+        // Process slides array
+        if (data.slides && Array.isArray(data.slides) && data.slides.length > 0) {
+            console.log(`Processing ${data.slides.length} slides`);
+            
+            // Process each slide
+            data.slides.forEach((slide, index) => {
+                if (!slide.title) {
+                    console.warn(`Slide ${index} has no title, skipping`);
+                    return;
+                }
                 
-                // Process topics into multiple slide types
-                processTopics(topics, videoReferences = []) {
-                    console.log('Processing topics:', topics.length);
-
-                    // For each topic, create at least two slides: content and video
-                    topics.forEach((topic, index) => {
-                        console.log(`Processing topic ${index + 1}: ${topic.title}`);
-
-                        // Main content slide
-                        const contentSlide = {
-                            type: 'topic',
-                            title: topic.title || `Topic ${index + 1}`,
-                            content: this.formatTopicContent(topic)
-                        };
-                        console.log(`Adding content slide: ${contentSlide.title}`);
-                        this.slides.push(contentSlide);
-
-                        // Get video reference (from topic or linked via index)
-                        let videoRef = topic.videoReference;
-                        if (!videoRef && videoReferences && videoReferences.length > 0) {
-                            videoRef = videoReferences.find(v =>
-                                v.relevantTopicIndex === index);
-                        }
-
-                        // Add video slide if a video reference exists
-                        if (videoRef && videoRef.url) {
-                            const videoSlide = {
-                                type: 'video',
-                                title: videoRef.title || `Video: ${topic.title}`,
-                                content: this.formatVideoContent(videoRef),
-                                videoRef: videoRef
-                            };
-                            console.log(`Adding video slide: ${videoSlide.title}`);
-                            this.slides.push(videoSlide);
-                        }
-
-                        // If topic has subtopics, create a detailed slide for each major subtopic
-                        if (topic.subtopics && topic.subtopics.length > 0) {
-                            console.log(`Topic has ${topic.subtopics.length} subtopics`);
-                            const subtopics = topic.subtopics.filter(s =>
-                                (typeof s === 'object' && s.title && s.description) ||
-                                (typeof s === 'string' && s.length > 10));
-
-                            if (subtopics.length > 0) {
-                                const subtopicSlide = {
-                                    type: 'subtopic',
-                                    title: `${topic.title} - Details`,
-                                    content: this.formatSubtopicsContent(subtopics)
-                                };
-                                console.log(`Adding subtopic slide: ${subtopicSlide.title}`);
-                                this.slides.push(subtopicSlide);
+                console.log(`Processing slide ${index + 1}: ${slide.title}`);
+                
+                // Create content from description and subtopics
+                let content = '';
+                
+                // Use description as the main content
+                if (slide.description) {
+                    content += `<p>${slide.description}</p>`;
+                    console.log(`  Added description (${slide.description.length} chars)`);
+                }
+                
+                // Add subtopics if available
+                if (slide.subtopics && Array.isArray(slide.subtopics) && slide.subtopics.length > 0) {
+                    console.log(`  Found ${slide.subtopics.length} subtopics`);
+                    content += '<h3>Key Points:</h3><ul>';
+                    
+                    slide.subtopics.forEach(subtopic => {
+                        if (typeof subtopic === 'string') {
+                            content += `<li>${subtopic}</li>`;
+                        } else if (subtopic && typeof subtopic === 'object') {
+                            if (subtopic.title) {
+                                let subtopicContent = `<li><strong>${subtopic.title}</strong>`;
+                                if (subtopic.description) {
+                                    subtopicContent += `: ${subtopic.description}`;
+                                }
+                                content += subtopicContent + '</li>';
                             }
                         }
                     });
-
-                    // Add Research References slide if any exist
-                    const allReferences = topics.flatMap(t => t.researchReferences || []);
-                    if (allReferences.length > 0) {
-                        const referencesSlide = {
-                            type: 'references',
-                            title: 'Research References',
-                            content: this.formatReferencesContent(allReferences)
-                        };
-                        console.log(`Adding references slide: ${referencesSlide.title}`);
-                        this.slides.push(referencesSlide);
+                    
+                    content += '</ul>';
+                }
+                
+                // Add the topic slide
+                this.slides.push({
+                    type: 'topic',
+                    title: slide.title,
+                    content: content,
+                    originalDescription: slide.description // Store original for reference
+                });
+                console.log(`  Added topic slide with content length: ${content.length}`);
+                
+                // Add video slide if available
+                if (slide.videoReference && slide.videoReference.url) {
+                    console.log(`  Found video reference: ${slide.videoReference.title}`);
+                    
+                    let videoContent = '';
+                    if (slide.videoReference.description) {
+                        videoContent += `<p>${slide.videoReference.description}</p>`;
                     }
-
-                    console.log(`Total slides after processing topics: ${this.slides.length}`);
-                },
+                    
+                    videoContent += `
+                        <div class="video-container">
+                            <iframe 
+                                width="560" 
+                                height="315" 
+                                src="${this.getEmbedUrl(slide.videoReference.url)}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <p class="video-caption">${slide.videoReference.title || 'Related Video'}</p>
+                    `;
+                    
+                    this.slides.push({
+                        type: 'video',
+                        title: `Video: ${slide.title}`,
+                        content: videoContent
+                    });
+                    console.log(`  Added video slide`);
+                }
+                
+                // Add subtopic slide if there are enough subtopics
+                if (slide.subtopics && Array.isArray(slide.subtopics) && slide.subtopics.length >= 2) {
+                    console.log(`  Creating detailed subtopics slide`);
+                    
+                    let subtopicsContent = '<div class="detailed-subtopics">';
+                    
+                    slide.subtopics.forEach(subtopic => {
+                        let title, description;
+                        
+                        if (typeof subtopic === 'string') {
+                            title = subtopic;
+                            description = '';
+                        } else if (subtopic && typeof subtopic === 'object') {
+                            title = subtopic.title || 'Subtopic';
+                            description = subtopic.description || '';
+                        }
+                        
+                        subtopicsContent += `
+                            <div class="subtopic-detail">
+                                <h3>${title}</h3>
+                                <p>${description}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    subtopicsContent += '</div>';
+                    
+                    this.slides.push({
+                        type: 'subtopic',
+                        title: `${slide.title} - Details`,
+                        content: subtopicsContent
+                    });
+                    console.log(`  Added subtopics slide`);
+                }
+            });
+        } else {
+            console.warn("No slides array found in data or it's empty");
+        }
+        
+        // Fallback: create at least one slide if none were created
+        if (this.slides.length <= 1) {
+            console.warn("No content slides were created, adding fallback slide");
+            this.slides.push({
+                type: 'topic',
+                title: "My Presentation",
+                content: "<p>Unable to process presentation data. Please return to the generator page.</p>"
+            });
+        }
+        
+        // Set metadata
+        if (data.metadata) {
+            this.metadata = data.metadata;
+        } else {
+            this.metadata = {
+                subject: "Presentation",
+                topic: "Topic"
+            };
+        }
+        
+        console.log("Processed slides:", this.slides);
+    } catch (error) {
+        console.error("Error processing presentation data:", error);
+        this.slides = [{
+            type: 'title',
+            title: "Error",
+            content: "<p>There was an error processing your presentation data. Please return to the generator page.</p>"
+        }];
+    }
+},            // Process topics into multiple slide types
+                processTopics(topics, videoReferences = []) {
+    console.log('Processing topics:', topics);
+    
+    // For each topic, create at least two slides: content and video
+    topics.forEach((topic, index) => {
+        console.log(`Processing topic ${index + 1}:`, topic);
+        
+        // IMPORTANT: Check what content is available in the topic
+        console.log(`Topic content sources:`, {
+            hasDescription: !!topic.description,
+            hasContent: !!topic.content,
+            descriptionLength: topic.description ? topic.description.length : 0,
+            contentLength: topic.content ? topic.content.length : 0
+        });
+        
+        // Preserve the original content
+        let topicContent = '';
+        
+        // Use description as primary content source
+        if (topic.description && topic.description.length > 0) {
+            topicContent = topic.description;
+        } 
+        // Fall back to content if description is not available
+        else if (topic.content && topic.content.length > 0) {
+            topicContent = topic.content;
+        }
+        
+        // Format the content with subtopics
+        const formattedContent = this.formatTopicContent(topic, topicContent);
+        
+        // Main content slide
+        const contentSlide = {
+            type: 'topic',
+            title: topic.title || `Topic ${index + 1}`,
+            content: formattedContent,
+            rawContent: topicContent // Store the raw content for debugging
+        };
+        console.log(`Adding content slide: ${contentSlide.title}`);
+        console.log(`Content length: ${contentSlide.content.length}`);
+        this.slides.push(contentSlide);
+        
+        // Get video reference (from topic or linked via index)
+        let videoRef = topic.videoReference;
+        if (!videoRef && videoReferences && videoReferences.length > 0) {
+            videoRef = videoReferences.find(v => 
+                v.relevantTopicIndex === index);
+        }
+        
+        // Add video slide if a video reference exists
+        if (videoRef && videoRef.url) {
+            const videoSlide = {
+                type: 'video',
+                title: videoRef.title || `Video: ${topic.title}`,
+                content: this.formatVideoContent(videoRef),
+                videoRef: videoRef
+            };
+            console.log(`Adding video slide: ${videoSlide.title}`);
+            this.slides.push(videoSlide);
+        }
+        
+        // If topic has subtopics, create a detailed slide for each major subtopic
+        if (topic.subtopics && Array.isArray(topic.subtopics) && topic.subtopics.length > 0) {
+            console.log(`Topic has ${topic.subtopics.length} subtopics`);
+            const subtopics = topic.subtopics.filter(s => 
+                (typeof s === 'object' && s.title && s.description) || 
+                (typeof s === 'string' && s.length > 10));
+                
+            if (subtopics.length > 0) {
+                const subtopicSlide = {
+                    type: 'subtopic',
+                    title: `${topic.title} - Details`,
+                    content: this.formatSubtopicsContent(subtopics)
+                };
+                console.log(`Adding subtopic slide: ${subtopicSlide.title}`);
+                this.slides.push(subtopicSlide);
+            }
+        }
+    });
+    
+    // Add Research References slide if any exist
+    const allReferences = topics.flatMap(t => t.researchReferences || []);
+    if (allReferences.length > 0) {
+        const referencesSlide = {
+            type: 'references',
+            title: 'Research References',
+            content: this.formatReferencesContent(allReferences)
+        };
+        console.log(`Adding references slide: ${referencesSlide.title}`);
+        this.slides.push(referencesSlide);
+    }
+    
+    console.log(`Total slides after processing topics: ${this.slides.length}`);
+},
                 
                 // Process existing slides array
                 processSlides(slides) {
@@ -1020,40 +1137,54 @@
                     console.log(`Total slides after processing slides array: ${this.slides.length}`);
                 },
                 
-                formatTopicContent(topic) {
-                    let description = topic.description || topic.content || '';
-                    let content = `<p>${description}</p>`;
-                    
-                    if (topic.subtopics && topic.subtopics.length > 0) {
-                        content += '<h3>Key Points:</h3><ul>';
-                        topic.subtopics.forEach(subtopic => {
-                            if (typeof subtopic === 'string') {
-                                content += `<li>${subtopic}</li>`;
-                            } else if (subtopic.title) {
-                                let subtopicContent = `<li><strong>${subtopic.title}</strong>`;
-                                if (subtopic.description) {
-                                    subtopicContent += `: ${subtopic.description}`;
-                                }
-                                content += subtopicContent + '</li>';
-                            }
-                        });
-                        content += '</ul>';
+                formatTopicContent(topic, rawContent = '') {
+    console.log('Formatting topic content for:', topic.title);
+    
+    // Start with the raw content or description
+    let content = '';
+    
+    // Use the provided raw content first
+    if (rawContent && rawContent.length > 0) {
+        content += `<p>${rawContent}</p>`;
+    }
+    // Then try topic.description
+    else if (topic.description && topic.description.length > 0) {
+        content += `<p>${topic.description}</p>`;
+    }
+    // Then try topic.content
+    else if (topic.content && topic.content.length > 0 && typeof topic.content === 'string') {
+        content += `<p>${topic.content}</p>`;
+    }
+    
+    // Add subtopics if available
+    if (topic.subtopics && Array.isArray(topic.subtopics) && topic.subtopics.length > 0) {
+        content += '<h3>Key Points:</h3><ul>';
+        topic.subtopics.forEach(subtopic => {
+            if (typeof subtopic === 'string') {
+                content += `<li>${subtopic}</li>`;
+            } else if (subtopic && typeof subtopic === 'object') {
+                if (subtopic.title) {
+                    let subtopicContent = `<li><strong>${subtopic.title}</strong>`;
+                    if (subtopic.description) {
+                        subtopicContent += `: ${subtopic.description}`;
                     }
-                    
-                    // Add research reference snippets if available
-                    if (topic.researchReferences && topic.researchReferences.length > 0) {
-                        content += `<div class="research-section">
-                            <h3>Research References:</h3>
-                            <ul>`;
-                        topic.researchReferences.slice(0, 2).forEach(ref => {
-                            content += `<li><strong>${ref.title}</strong>: ${ref.authors || ref.citation || ''}</li>`;
-                        });
-                        content += `</ul></div>`;
-                    }
-                    
-                    return content;
-                },
-                
+                    content += subtopicContent + '</li>';
+                }
+            }
+        });
+        content += '</ul>';
+    }
+    
+    // If no content has been added, add a default message
+    if (!content || content === '<p></p>') {
+        content = `<p>Information about ${topic.title}</p>`;
+        console.warn(`Using default content for ${topic.title}`);
+    }
+    
+    console.log('Formatted content length:', content.length);
+    console.log('Content preview:', content.substring(0, 100) + '...');
+    return content;
+},  
                 formatVideoContent(videoRef) {
                     const embedUrl = this.getEmbedUrl(videoRef.url);
                     let content = '';
@@ -1146,86 +1277,35 @@
                 
                 // Process slide content for display - handle embedding videos properly
                 processSlideContent(content) {
-                    if (!content) return '';
-                    
-                    // If the content already has video iframes, return it as is
-                    if (content.includes('<iframe')) {
-                        return content;
-                    }
-                    
-                    try {
-                        // Create a temporary div to parse HTML
-                        const tempDiv = document.createElement('div');
-                        tempDiv.innerHTML = content;
-                        
-                        // Find all video URLs in the content
-                        const videoElements = tempDiv.querySelectorAll('a[href*="youtube.com"], a[href*="youtu.be"]');
-                        
-                        // Replace them with proper embedded iframes
-                        videoElements.forEach(videoLink => {
-                            const url = videoLink.getAttribute('href');
-                            const embedUrl = this.getEmbedUrl(url);
-                            
-                            // Create a container for the video
-                            const videoContainer = document.createElement('div');
-                            videoContainer.className = 'video-container';
-                            videoContainer.innerHTML = `
-                                <iframe 
-                                    width="560" 
-                                    height="315" 
-                                    src="${embedUrl}" 
-                                    frameborder="0" 
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen>
-                                </iframe>
-                                <p class="video-caption">Video: <a href="${url}" target="_blank">${url}</a></p>
-                            `;
-                            
-                            // Replace the link with the video container
-                            videoLink.parentNode.replaceChild(videoContainer, videoLink);
-                        });
-                        
-                        // Check for plain text YouTube URLs
-                        const paragraphs = tempDiv.querySelectorAll('p');
-                        paragraphs.forEach(paragraph => {
-                            const text = paragraph.textContent;
-                            const youtubeRegex = /(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-                            const match = text.match(youtubeRegex);
-                            
-                            if (match) {
-                                const videoId = match[4];
-                                const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                                const fullUrl = `https://www.youtube.com/watch?v=${videoId}`;
-                                
-                                // Create a container for the video
-                                const videoContainer = document.createElement('div');
-                                videoContainer.className = 'video-container';
-                                videoContainer.innerHTML = `
-                                    <iframe 
-                                        width="560" 
-                                        height="315" 
-                                        src="${embedUrl}" 
-                                        frameborder="0" 
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                        allowfullscreen>
-                                    </iframe>
-                                    <p class="video-caption">Video: <a href="${fullUrl}" target="_blank">${fullUrl}</a></p>
-                                `;
-                                
-                                // Replace the paragraph with the video container
-                                if (text.trim() === match[0]) {
-                                    paragraph.parentNode.replaceChild(videoContainer, paragraph);
-                                }
-                            }
-                        });
-                        
-                        // Return the processed content
-                        return tempDiv.innerHTML;
-                    } catch (error) {
-                        console.error('Error processing slide content:', error);
-                        return content; // Return original content if processing fails
-                    }
-                },
+    // Basic validation
+    if (!content) {
+        console.warn('Empty content provided to processSlideContent');
+        return '<p>No content available for this slide.</p>';
+    }
+    
+    // If content is not a string, convert it
+    if (typeof content !== 'string') {
+        console.warn('Non-string content provided:', typeof content);
+        try {
+            content = JSON.stringify(content);
+        } catch (e) {
+            return '<p>Error: Content is not in a displayable format.</p>';
+        }
+    }
+    
+    // If content is empty after conversion, return a message
+    if (!content || content.trim() === '') {
+        return '<p>No content available for this slide.</p>';
+    }
+    
+    // If content doesn't have HTML structure, wrap it in paragraph tags
+    if (!content.includes('<')) {
+        return `<p>${content}</p>`;
+    }
+    
+    // Return the content as is - we'll handle video processing later
+    return content;
+},
                 
                 // Extract video description from content
                 getVideoDescription(content) {
@@ -2105,6 +2185,7 @@
                         return this.stripHtml(html);
                     }
                 },
+
                 
                 // Extract video details from HTML
                 extractVideoDetails(html) {
