@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: teaching-materials-generator
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_API_ENDPOINT
+        sync: false
+      - key: YOUTUBE_API_KEY
+        value: AIzaSyCdCsVQkhHTu2UqgyiUxzjYg3dOeRs5PIg
