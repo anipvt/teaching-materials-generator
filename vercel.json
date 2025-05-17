@@ -2,26 +2,34 @@
   "version": 2,
   "builds": [
     {
-      "src": "server.js",
+      "src": "api/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/(.*)\\.(.+)",
-      "dest": "/public/$1.$2"
+      "dest": "/api/index.js"
     },
     {
       "src": "/pages/(.*)",
       "dest": "/public/pages/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/server.js"
+      "src": "/(.+)\\.(css|js|html|svg|png|jpg|jpeg|gif|ico|json)",
+      "dest": "/public/$1.$2"
+    },
+    {
+      "src": "/(generator|preview|search|mentimeter|history|about)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/",
+      "dest": "/api/index.js"
     }
   ]
 }
