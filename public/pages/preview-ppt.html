@@ -1,0 +1,2095 @@
+<!DOCTYPE html>
+<html lang="en" x-data>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerPoint Preview - TeachPrep AI</title>
+    <link rel="stylesheet" href="../css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/divi-theme.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <script src="../js/simple-ppt-generator.js"></script>
+    <script src="fixed-ppt.js"></script>
+    <style>
+        /* Divi-inspired theme */
+        :root {
+            --divi-primary: #f89406;
+            --divi-secondary: #0c71c3;
+            --divi-text: #666666;
+            --divi-heading: #333333;
+            --divi-light: #f5f5f5;
+            --divi-dark: #2b2b2b;
+            --divi-border: #e0e0e0;
+            --divi-shadow: rgba(0, 0, 0, 0.1);
+            --divi-accent: #7EBEC5;
+        }
+        
+        body {
+            font-family: 'Open Sans', Arial, sans-serif;
+            color: var(--divi-text);
+            background-color: #ffffff;
+            line-height: 1.7em;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Light theme implementation - no dark mode */
+        .light-theme {
+            background-color: #ffffff;
+            color: var(--divi-text);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-weight: 500;
+            color: var(--divi-heading);
+            margin-top: 0;
+        }
+        
+        /* Light theme headings */
+        h1, h2, h3, 
+        h4, h5, h6 {
+            color: var(--divi-heading);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header styles */
+        .header {
+            background-color: var(--divi-dark);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo a {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .highlight {
+            color: var(--divi-primary);
+        }
+        
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav a:hover {
+            color: var(--divi-primary);
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            cursor: pointer;
+        }
+        
+        /* Content */
+        .content {
+            padding: 2rem 0;
+        }
+        
+        .page-title-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            color: var(--divi-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .description {
+            margin-bottom: 1.5rem;
+            color: #888;
+        }
+        
+        /* Slide styles */
+        .slide-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid var(--divi-border);
+            box-shadow: 0 5px 15px var(--divi-shadow);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        /* Light theme slide container */
+        .slide-container {
+            background: #ffffff;
+            border-color: #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .slide-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--divi-primary);
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--divi-border);
+            padding-bottom: 15px;
+        }
+        
+        /* Light theme slide title */
+        .slide-title {
+            border-bottom-color: #e0e0e0;
+        }
+        
+        .slide-content {
+            line-height: 1.6;
+        }
+        
+        .slide-content h1, 
+        .slide-content h2, 
+        .slide-content h3 {
+            color: var(--divi-primary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .slide-content p {
+            margin-bottom: 15px;
+        }
+        
+        .slide-content ul, 
+        .slide-content ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .slide-content li {
+            margin-bottom: 5px;
+        }
+        
+        .slide-notes {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(46, 163, 242, 0.05);
+            border-left: 3px solid var(--divi-primary);
+            font-style: italic;
+        }
+        
+        /* Video styles */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .video-caption {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        
+        /* Navigation controls */
+        .slide-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .slide-nav-btn {
+            background-color: var(--divi-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 600;
+        }
+        
+        .slide-nav-btn:hover {
+            background-color: var(--divi-secondary);
+        }
+        
+        .slide-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .slide-counter {
+            color: var(--divi-primary);
+            font-size: 16px;
+        }
+        
+        /* Mentimeter styles */
+        .mentimeter-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .mentimeter-title {
+            font-size: 28px;
+            color: var(--divi-primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .mentimeter-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .qr-code-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .qr-code {
+            width: 180px;
+            height: 180px;
+            border: 1px solid var(--divi-border);
+            border-radius: 4px;
+        }
+        
+        .qr-code-label {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--divi-secondary);
+            font-size: 16px;
+        }
+        
+        .mentimeter-instructions {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 16px;
+            color: var(--divi-text);
+        }
+        
+        .mentimeter-code {
+            font-weight: bold;
+            color: var(--divi-primary);
+            font-size: 20px;
+            margin: 5px 0;
+        }
+        
+        .mentimeter-questions {
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .question-preview {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-left: 3px solid var(--divi-primary);
+            background-color: rgba(46, 163, 242, 0.05);
+        }
+        
+        /* Research reference */
+        .research-reference {
+            background-color: rgba(46, 163, 242, 0.05);
+            border: 1px solid rgba(46, 163, 242, 0.2);
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .research-title {
+            font-weight: bold;
+            color: var(--divi-primary);
+            margin-bottom: 5px;
+        }
+        
+        .research-authors {
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .research-link {
+            display: block;
+            margin-top: 10px;
+            color: var(--divi-primary);
+            text-decoration: underline;
+        }
+        
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .action-btn {
+            padding: 12px 24px;
+            background-color: var(--divi-primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--divi-secondary);
+        }
+        
+        .action-btn.download {
+            background-color: #4CAF50;
+        }
+        
+        .action-btn.download:hover {
+            background-color: #388E3C;
+        }
+        
+        .action-btn.back {
+            background-color: #757575;
+        }
+        
+        .action-btn.back:hover {
+            background-color: #616161;
+        }
+        
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(46, 163, 242, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--divi-primary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-message {
+            text-align: center;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 1px solid var(--divi-border);
+            color: #999;
+        }
+        
+        /* Light theme footer */
+        .footer {
+            border-top-color: #e0e0e0;
+        }
+        
+        /* Printable styles (for PDF export) */
+        .print-slide {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 210mm; /* A4 width */
+            background: white;
+            padding: 20mm;
+            box-shadow: none;
+            border: none;
+        }
+        
+        .print-slide .slide-title {
+            color: #333333 !important;
+            border-bottom-color: #dddddd !important;
+        }
+        
+        .print-slide .slide-content h1,
+        .print-slide .slide-content h2,
+        .print-slide .slide-content h3,
+        .print-slide .slide-content h4 {
+            color: #0066cc !important;
+        }
+        
+        .print-slide .slide-content p,
+        .print-slide .slide-content li {
+            color: black !important;
+        }
+        
+        .print-slide .slide-content a {
+            color: #0066cc !important;
+            text-decoration: underline;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .nav {
+                margin-top: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        .theme-options {
+            margin-bottom: 20px;
+        }
+        
+        .content-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body class="">
+    <header class="header">
+        <div class="logo">
+            <a href="../index.html"><span class="highlight">Teach</span>Prep AI</a>
+        </div>
+        <nav class="nav">
+                <a href="../index.html">Home</a>
+                <a href="generator.html">Generator</a>
+                <a href="search.html">Search</a>
+                <a href="history.html">History</a>
+                <a href="about.html">About</a>
+            </nav>
+            <!-- Theme toggle removed - using light theme only -->
+        </header>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="page-title-container">
+                <h1 class="page-title" x-text="metadata.subject + ' - ' + metadata.topic"></h1>
+                <p class="description">
+                    <span x-text="'Academic Term: ' + metadata.semester"></span> • 
+                    <span x-text="'Class Level: ' + metadata.classNumber"></span> • 
+                    <span x-text="'Difficulty: ' + metadata.difficultyLevel"></span>
+                </p>
+                
+                <!-- Theme Options -->
+                <div class="theme-options">
+                    <div class="content-label">Presentation Theme:</div>
+                    <div class="theme-select">
+                        <select x-model="selectedTheme" @change="updateSlideAppearance()" class="form-select">
+                            <option value="divi">Divi</option>
+                            <option value="corporate">Corporate</option>
+                            <option value="academic">Academic</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide Navigation Controls (Top) -->
+            <div class="slide-controls">
+                <button class="slide-nav-btn" @click="prevSlide()" :disabled="currentSlideIndex === 0">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <div class="slide-counter" x-text="'Slide ' + (currentSlideIndex + 1) + ' of ' + slides.length"></div>
+                <button class="slide-nav-btn" @click="nextSlide()" :disabled="currentSlideIndex === slides.length - 1">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <!-- Current Slide -->
+            <div class="slide-container" :class="'theme-' + selectedTheme">
+                <!-- Title Slide -->
+                <template x-if="slides[currentSlideIndex] && slides[currentSlideIndex].type === 'title'">
+                    <div class="slide title-slide">
+                        <h1 class="title-text" x-text="slides[currentSlideIndex].title"></h1>
+                        <div class="subtitle-text" x-text="metadata.subject + ' | ' + metadata.semester"></div>
+                        <div class="author-text" x-text="'For ' + metadata.classNumber + ' | ' + metadata.difficultyLevel + ' Level'"></div>
+                    </div>
+                </template>
+                
+                <!-- Topic Slide -->
+                <template x-if="slides[currentSlideIndex] && slides[currentSlideIndex].type === 'topic'">
+                    <div class="slide topic-slide">
+                        <h2 class="slide-title" x-text="slides[currentSlideIndex].title"></h2>
+                        <div class="slide-content" x-html="processSlideContent(slides[currentSlideIndex].content)"></div>
+                    </div>
+                </template>
+                
+                <!-- Subtopic Slide -->
+                <template x-if="slides[currentSlideIndex] && slides[currentSlideIndex].type === 'subtopic'">
+                    <div class="slide subtopic-slide">
+                        <h2 class="slide-title" x-text="slides[currentSlideIndex].title"></h2>
+                        <div class="slide-content" x-html="processSlideContent(slides[currentSlideIndex].content)"></div>
+                    </div>
+                </template>
+                
+                <!-- Video Slide -->
+                <template x-if="slides[currentSlideIndex] && slides[currentSlideIndex].type === 'video'">
+                    <div class="slide video-slide">
+                        <h2 class="slide-title" x-text="slides[currentSlideIndex].title"></h2>
+                        
+                        <!-- Video content with embedded player -->
+                        <div class="video-content">
+                            <!-- Description from the video content -->
+                            <div class="video-description" x-html="getVideoDescription(slides[currentSlideIndex].content)"></div>
+                            
+                            <!-- Direct video embedding -->
+                            <div class="video-container">
+                                <iframe 
+                                    :src="getVideoEmbedUrl(slides[currentSlideIndex].content)" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                
+                <!-- Reference Slide -->
+                <template x-if="slides[currentSlideIndex] && slides[currentSlideIndex].type === 'references'">
+                    <div class="slide reference-slide">
+                        <h2 class="slide-title" x-text="slides[currentSlideIndex].title"></h2>
+                        <div class="slide-content" x-html="processSlideContent(slides[currentSlideIndex].content)"></div>
+                    </div>
+                </template>
+                
+                <!-- Mentimeter Quiz Slide -->
+                <template x-if="slides[currentSlideIndex] && slides[currentSlideIndex].type === 'mentimeter-quiz'">
+                    <div class="slide mentimeter-slide">
+                        <h2 class="mentimeter-title">Interactive Quiz</h2>
+                        <div class="mentimeter-content">
+                            <p class="mentimeter-instructions">Participate in the interactive quiz by scanning the QR code below or visiting Mentimeter and entering the code:</p>
+                            <p class="mentimeter-code" x-text="slides[currentSlideIndex].mentimeterData.sessionCode"></p>
+                            <div class="qr-code-container">
+                                <img :src="slides[currentSlideIndex].mentimeterData.qrCodeUrl" alt="Quiz QR Code" class="qr-code">
+                                <p class="qr-code-label">Scan this QR code to join!</p>
+                            </div>
+                            <div class="mentimeter-questions">
+                                <p>Sample questions (visible to instructor only):</p>
+                                <template x-for="(question, index) in slides[currentSlideIndex].mentimeterData.questions.slice(0, 2)" :key="index">
+                                    <div class="question-preview">
+                                        <p x-text="(index + 1) + '. ' + question.question"></p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                
+                <!-- Mentimeter Poll Slide -->
+                <template x-if="slides[currentSlideIndex] && slides[currentSlideIndex].type === 'mentimeter-poll'">
+                    <div class="slide mentimeter-slide">
+                        <h2 class="mentimeter-title">Class Poll</h2>
+                        <div class="mentimeter-content">
+                            <p class="mentimeter-instructions">Share your opinion by scanning the QR code below or visiting Mentimeter and entering the code:</p>
+                            <p class="mentimeter-code" x-text="slides[currentSlideIndex].mentimeterData.sessionCode"></p>
+                            <div class="qr-code-container">
+                                <img :src="slides[currentSlideIndex].mentimeterData.qrCodeUrl" alt="Poll QR Code" class="qr-code">
+                                <p class="qr-code-label">Scan this QR code to participate!</p>
+                            </div>
+                            <div class="mentimeter-questions">
+                                <p>Sample questions (visible to instructor only):</p>
+                                <template x-for="(question, index) in slides[currentSlideIndex].mentimeterData.questions.slice(0, 2)" :key="index">
+                                    <div class="question-preview">
+                                        <p x-text="(index + 1) + '. ' + question.question"></p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                
+                <!-- Mentimeter Word Cloud Slide -->
+                <template x-if="slides[currentSlideIndex] && slides[currentSlideIndex].type === 'mentimeter-wordcloud'">
+                    <div class="slide mentimeter-slide">
+                        <h2 class="mentimeter-title">Word Cloud Activity</h2>
+                        <div class="mentimeter-content">
+                            <p class="mentimeter-instructions" x-text="slides[currentSlideIndex].mentimeterData.question"></p>
+                            <p class="mentimeter-code" x-text="slides[currentSlideIndex].mentimeterData.sessionCode"></p>
+                            <div class="qr-code-container">
+                                <img :src="slides[currentSlideIndex].mentimeterData.qrCodeUrl" alt="Word Cloud QR Code" class="qr-code">
+                                <p class="qr-code-label">Scan this QR code to contribute!</p>
+                            </div>
+                            <div class="mentimeter-questions">
+                                <p>Sample words (visible to instructor only):</p>
+                                <div class="question-preview" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                    <template x-for="(word, index) in slides[currentSlideIndex].mentimeterData.suggestedWords.slice(0, 8)" :key="index">
+                                        <span x-text="word" style="background-color: rgba(46, 163, 242, 0.1); padding: 5px 10px; border-radius: 15px;"></span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
+            <!-- Slide Navigation Controls (Bottom) -->
+            <div class="slide-controls">
+                <button class="slide-nav-btn" @click="prevSlide()" :disabled="currentSlideIndex === 0">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <div class="slide-counter">
+                    Slide <span x-text="currentSlideIndex + 1"></span> of <span x-text="slides.length"></span>
+                </div>
+                <button class="slide-nav-btn" @click="nextSlide()" :disabled="currentSlideIndex === slides.length - 1">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/generator" class="action-btn back">
+                    <i class="fas fa-arrow-left"></i> Back to Generator
+                </a>
+                <button @click="downloadPDF()" class="action-btn download">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+                <button @click="downloadPPTX()" class="action-btn download" style="background-color: #7030A0;">
+                    <i class="fas fa-file-powerpoint"></i> Download PPTX
+                </button>
+                <button @click="downloadDOCX()" class="action-btn download" style="background-color: #2b579a;">
+                    <i class="fas fa-file-word"></i> Download Word
+                </button>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="copyright">&copy; 2025 TeachPrep AI. All rights reserved.</div>
+        </footer>
+    </div>
+    
+    <!-- Loading Overlay (Hidden by default) -->
+    <div class="loading-overlay" x-show="isExporting" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-message">
+            <p>Generating your presentation...</p>
+            <p x-text="'Processing slide ' + (processingSlide) + ' of ' + slides.length"></p>
+        </div>
+    </div>
+
+    <script>
+        function pptPreview() {
+            return {
+                currentSlideIndex: 0,
+                isExporting: false,
+                processingSlide: 0,
+                // Dark mode removed
+                isDarkMode: false,
+                selectedTheme: 'divi',
+                slides: [],
+                metadata: {
+                    subject: 'Loading...',
+                    topic: 'Loading...',
+                    semester: '',
+                    classNumber: '',
+                    difficultyLevel: ''
+                },
+                
+                // Function to convert YouTube URLs to embed URLs
+                getEmbedUrl(url) {
+                    try {
+                        // Handle various YouTube URL formats
+                        if (!url || url.trim() === '') return '';
+                        
+                        // Check if url is a valid URL, if not try to fix common issues
+                        let validUrl = url;
+                        if (!url.startsWith('http')) {
+                            validUrl = 'https://' + url;
+                        }
+                        
+                        // Regular youtube.com URL
+                        if (validUrl.includes('youtube.com/watch')) {
+                            try {
+                                const videoId = new URL(validUrl).searchParams.get('v');
+                                if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+                            } catch (e) {
+                                // If URL parsing fails, try regex
+                                const match = validUrl.match(/[?&]v=([^&]+)/);
+                                if (match && match[1]) return `https://www.youtube.com/embed/${match[1]}`;
+                            }
+                        }
+                        
+                        // Short youtu.be URL
+                        if (validUrl.includes('youtu.be/')) {
+                            try {
+                                const parts = validUrl.split('youtu.be/');
+                                if (parts.length > 1) {
+                                    const videoId = parts[1].split('?')[0];
+                                    return `https://www.youtube.com/embed/${videoId}`;
+                                }
+                            } catch (e) {
+                                // Regex fallback for youtu.be links
+                                const match = validUrl.match(/youtu\.be\/([^?&]+)/);
+                                if (match && match[1]) return `https://www.youtube.com/embed/${match[1]}`;
+                            }
+                        }
+                        
+                        // Already an embed URL
+                        if (validUrl.includes('youtube.com/embed/')) {
+                            return validUrl;
+                        }
+                        
+                        // If we get here and we still don't have a valid embed URL, check if the URL contains a video ID
+                        const videoIdMatch = validUrl.match(/([a-zA-Z0-9_-]{11})/);
+                        if (videoIdMatch && videoIdMatch[1] && videoIdMatch[1].length === 11) {
+                            return `https://www.youtube.com/embed/${videoIdMatch[1]}`;
+                        }
+                        
+                        // If none of the above worked, assume it's not a YouTube URL or is malformed
+                        // Return a default educational video as a fallback
+                        // Using Khan Academy's Introduction to Physics video as fallback
+                        return 'https://www.youtube.com/embed/uVCuz9mHLJ0';
+                    } catch (error) {
+                        console.error('Error parsing video URL:', error);
+                        // Khan Academy's Introduction to Physics video as fallback
+                        return 'https://www.youtube.com/embed/uVCuz9mHLJ0';
+                    }
+                },
+                
+                init() {
+                    // Get the presentation data from URL parameter
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const dataId = urlParams.get('id');
+                    
+                    if (dataId) {
+                        // Look up the presentation data in localStorage
+                        const presentationData = localStorage.getItem(dataId);
+                        
+                        if (presentationData) {
+                            const data = JSON.parse(presentationData);
+                            this.processData(data);
+                        } else {
+                            alert('Presentation not found. Please generate a new one.');
+                            window.location.href = '/generator';
+                        }
+                    } else {
+                        // For backward compatibility, try the old localStorage keys
+                        const presentationData = localStorage.getItem('generatedPPT');
+                        const metadataStr = localStorage.getItem('pptMetadata');
+                        
+                        if (presentationData && metadataStr) {
+                            const data = {
+                                slides: JSON.parse(presentationData),
+                                metadata: JSON.parse(metadataStr)
+                            };
+                            this.processData(data);
+                        } else {
+                            alert('No presentation ID provided. Please generate a new one.');
+                            window.location.href = '/generator';
+                        }
+                    }
+                },
+
+                processData(data) {
+                    try {
+                        console.log("Processing data:", data);
+                        this.slides = [];
+                        
+                        // Add title slide
+                        this.slides.push({
+                            type: 'title',
+                            title: data.metadata?.topic || 'Presentation',
+                            content: ''
+                        });
+                        
+                        // Handle different possible data structures
+                        if (data.slides) {
+                            // Direct array of slides
+                            if (Array.isArray(data.slides)) {
+                                this.processSlides(data.slides);
+                            } 
+                            // Process topics array to create slides
+                            else if (Array.isArray(data.slides.topics)) {
+                                this.processTopics(data.slides.topics, data.slides.videoReferences);
+                            }
+                            // Single topic object
+                            else if (typeof data.slides === 'object' && data.slides.title) {
+                                this.processTopics([data.slides]);
+                            }
+                        } 
+                        // Handle direct array (no slides wrapper)
+                        else if (Array.isArray(data)) {
+                            const topics = data.filter(item => item.title).map(item => ({
+                                title: item.title,
+                                content: this.formatTopicContent(item),
+                                videoReference: item.videoReference
+                            }));
+                            this.processTopics(topics);
+                        }
+                        
+                        // Fallback: create at least one slide
+                        if (this.slides.length === 0) {
+                            this.slides = [{
+                                title: "My Presentation",
+                                content: "<p>Unable to process presentation data. Please return to the generator page.</p>"
+                            }];
+                        }
+                        
+                        // Set metadata
+                        if (data.metadata) {
+                            this.metadata = data.metadata;
+                        } else {
+                            this.metadata = {
+                                subject: "Presentation",
+                                topic: "Topic"
+                            };
+                        }
+                        
+                        console.log("Processed slides:", this.slides);
+                    } catch (error) {
+                        console.error("Error processing presentation data:", error);
+                        this.slides = [{
+                            title: "Error",
+                            content: "<p>There was an error processing your presentation data. Please return to the generator page.</p>"
+                        }];
+                    }
+                },
+                
+                // Process topics into multiple slide types
+                processTopics(topics, videoReferences = []) {
+                    // For each topic, create at least two slides: content and video
+                    topics.forEach(topic => {
+                        // Main content slide
+                        this.slides.push({
+                            type: 'topic',
+                            title: topic.title,
+                            content: this.formatTopicContent(topic)
+                        });
+                        
+                        // Get video reference (from topic or linked via index)
+                        let videoRef = topic.videoReference;
+                        if (!videoRef && videoReferences) {
+                            videoRef = videoReferences.find(v => 
+                                v.relevantTopicIndex === topics.indexOf(topic));
+                        }
+                        
+                        // Add video slide if a video reference exists
+                        if (videoRef && videoRef.url) {
+                            this.slides.push({
+                                type: 'video',
+                                title: videoRef.title || `Video: ${topic.title}`,
+                                content: this.formatVideoContent(videoRef),
+                                videoRef: videoRef
+                            });
+                        }
+                        
+                        // If topic has subtopics, create a detailed slide for each major subtopic
+                        if (topic.subtopics && topic.subtopics.length > 0) {
+                            const subtopics = topic.subtopics.filter(s => 
+                                (typeof s === 'object' && s.title && s.description) || 
+                                (typeof s === 'string' && s.length > 10));
+                                
+                            if (subtopics.length > 0) {
+                                this.slides.push({
+                                    type: 'subtopic',
+                                    title: `${topic.title} - Details`,
+                                    content: this.formatSubtopicsContent(subtopics)
+                                });
+                            }
+                        }
+                    });
+                    
+                    // Add Research References slide if any exist
+                    const allReferences = topics.flatMap(t => t.researchReferences || []);
+                    if (allReferences.length > 0) {
+                        this.slides.push({
+                            type: 'references',
+                            title: 'Research References',
+                            content: this.formatReferencesContent(allReferences)
+                        });
+                    }
+                },
+                
+                // Process existing slides array
+                processSlides(slides) {
+                    slides.forEach(slide => {
+                        this.slides.push(slide);
+                        
+                        // If slide has video content, create a separate video slide
+                        if (slide.content && slide.content.includes('video-container')) {
+                            const videoSlide = {
+                                type: 'video',
+                                title: `Video: ${slide.title}`,
+                                content: this.extractVideoContent(slide.content)
+                            };
+                            this.slides.push(videoSlide);
+                        }
+                    });
+                },
+                
+                formatTopicContent(topic) {
+                    let description = topic.description || topic.content || '';
+                    let content = `<p>${description}</p>`;
+                    
+                    if (topic.subtopics && topic.subtopics.length > 0) {
+                        content += '<h3>Key Points:</h3><ul>';
+                        topic.subtopics.forEach(subtopic => {
+                            if (typeof subtopic === 'string') {
+                                content += `<li>${subtopic}</li>`;
+                            } else if (subtopic.title) {
+                                let subtopicContent = `<li><strong>${subtopic.title}</strong>`;
+                                if (subtopic.description) {
+                                    subtopicContent += `: ${subtopic.description}`;
+                                }
+                                content += subtopicContent + '</li>';
+                            }
+                        });
+                        content += '</ul>';
+                    }
+                    
+                    // Add research reference snippets if available
+                    if (topic.researchReferences && topic.researchReferences.length > 0) {
+                        content += `<div class="research-section">
+                            <h3>Research References:</h3>
+                            <ul>`;
+                        topic.researchReferences.slice(0, 2).forEach(ref => {
+                            content += `<li><strong>${ref.title}</strong>: ${ref.authors || ref.citation || ''}</li>`;
+                        });
+                        content += `</ul></div>`;
+                    }
+                    
+                    return content;
+                },
+                
+                formatVideoContent(videoRef) {
+                    const embedUrl = this.getEmbedUrl(videoRef.url);
+                    let content = '';
+                    
+                    if (videoRef.description) {
+                        content += `<p>${videoRef.description}</p>`;
+                    }
+                    
+                    if (embedUrl) {
+                        content += `<div class="video-section">
+                            <div class="video-container">
+                                <iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            <p><strong>${videoRef.title || 'Related Video'}</strong></p>
+                        </div>`;
+                    }
+                    
+                    return content;
+                },
+                
+                formatSubtopicsContent(subtopics) {
+                    let content = '<div class="detailed-subtopics">';
+                    
+                    subtopics.forEach(subtopic => {
+                        const title = typeof subtopic === 'string' ? subtopic : subtopic.title;
+                        const description = typeof subtopic === 'object' ? subtopic.description : '';
+                        
+                        content += `<div class="subtopic-detail">
+                            <h3>${title}</h3>
+                            <p>${description}</p>
+                        </div>`;
+                    });
+                    
+                    content += '</div>';
+                    return content;
+                },
+                
+                formatReferencesContent(references) {
+                    let content = '<div class="references-list"><ul>';
+                    
+                    references.forEach(ref => {
+                        content += `<li>
+                            <div class="research-reference">
+                                <div class="research-title">${ref.title}</div>
+                                <div class="research-authors">${ref.authors || ''}</div>
+                                <div>${ref.description || ''}</div>
+                                <a href="${ref.url}" target="_blank" class="research-link">${ref.url}</a>
+                            </div>
+                        </li>`;
+                    });
+                    
+                    content += '</ul></div>';
+                    return content;
+                },
+                
+                extractVideoContent(content) {
+                    // Extract video iframe and related info from content
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = content;
+                    
+                    const videoSection = tempDiv.querySelector('.video-section') || tempDiv.querySelector('.video-container');
+                    if (videoSection) {
+                        return videoSection.outerHTML;
+                    }
+                    
+                    return content;
+                },
+                
+                // Theme toggle functionality removed - using light theme only
+                toggleTheme() {
+                    // Light theme is now the default
+                    this.isDarkMode = false;
+                    localStorage.setItem('darkMode', 'false');
+                    return false; // Prevent any theme switching
+                },
+                
+                prevSlide() {
+                    if (this.currentSlideIndex > 0) {
+                        this.currentSlideIndex--;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                },
+                
+                nextSlide() {
+                    if (this.currentSlideIndex < this.slides.length - 1) {
+                        this.currentSlideIndex++;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                },
+                
+                // Process slide content for display - handle embedding videos properly
+                processSlideContent(content) {
+                    if (!content) return '';
+                    
+                    // If the content already has video iframes, return it as is
+                    if (content.includes('<iframe')) {
+                        return content;
+                    }
+                    
+                    try {
+                        // Create a temporary div to parse HTML
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = content;
+                        
+                        // Find all video URLs in the content
+                        const videoElements = tempDiv.querySelectorAll('a[href*="youtube.com"], a[href*="youtu.be"]');
+                        
+                        // Replace them with proper embedded iframes
+                        videoElements.forEach(videoLink => {
+                            const url = videoLink.getAttribute('href');
+                            const embedUrl = this.getEmbedUrl(url);
+                            
+                            // Create a container for the video
+                            const videoContainer = document.createElement('div');
+                            videoContainer.className = 'video-container';
+                            videoContainer.innerHTML = `
+                                <iframe 
+                                    width="560" 
+                                    height="315" 
+                                    src="${embedUrl}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                                <p class="video-caption">Video: <a href="${url}" target="_blank">${url}</a></p>
+                            `;
+                            
+                            // Replace the link with the video container
+                            videoLink.parentNode.replaceChild(videoContainer, videoLink);
+                        });
+                        
+                        // Check for plain text YouTube URLs
+                        const paragraphs = tempDiv.querySelectorAll('p');
+                        paragraphs.forEach(paragraph => {
+                            const text = paragraph.textContent;
+                            const youtubeRegex = /(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+                            const match = text.match(youtubeRegex);
+                            
+                            if (match) {
+                                const videoId = match[4];
+                                const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                                const fullUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                                
+                                // Create a container for the video
+                                const videoContainer = document.createElement('div');
+                                videoContainer.className = 'video-container';
+                                videoContainer.innerHTML = `
+                                    <iframe 
+                                        width="560" 
+                                        height="315" 
+                                        src="${embedUrl}" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen>
+                                    </iframe>
+                                    <p class="video-caption">Video: <a href="${fullUrl}" target="_blank">${fullUrl}</a></p>
+                                `;
+                                
+                                // Replace the paragraph with the video container
+                                if (text.trim() === match[0]) {
+                                    paragraph.parentNode.replaceChild(videoContainer, paragraph);
+                                }
+                            }
+                        });
+                        
+                        // Return the processed content
+                        return tempDiv.innerHTML;
+                    } catch (error) {
+                        console.error('Error processing slide content:', error);
+                        return content; // Return original content if processing fails
+                    }
+                },
+                
+                // Extract video description from content
+                getVideoDescription(content) {
+                    if (!content) return '';
+                    
+                    try {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = content;
+                        
+                        // Remove any iframe elements to get just the text description
+                        const iframes = tempDiv.querySelectorAll('iframe');
+                        iframes.forEach(iframe => iframe.parentNode.removeChild(iframe));
+                        
+                        // Get the remaining text content
+                        const description = tempDiv.textContent.trim();
+                        return description;
+                    } catch (error) {
+                        console.error('Error extracting video description:', error);
+                        return content;
+                    }
+                },
+                
+                // Extract video URL and convert to embed URL
+                getVideoEmbedUrl(content) {
+                    if (!content) return '';
+                    
+                    try {
+                        // First, check if there's an iframe already
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = content;
+                        
+                        const iframe = tempDiv.querySelector('iframe');
+                        if (iframe && iframe.src) {
+                            return iframe.src;
+                        }
+                        
+                        // Check for YouTube links in content
+                        const links = tempDiv.querySelectorAll('a');
+                        for (const link of links) {
+                            if (link.href && (link.href.includes('youtube.com') || link.href.includes('youtu.be'))) {
+                                return this.getEmbedUrl(link.href);
+                            }
+                        }
+                        
+                        // Check for YouTube URLs in the text
+                        const ytRegex = /(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+                        const match = content.match(ytRegex);
+                        
+                        if (match && match[4]) {
+                            return `https://www.youtube.com/embed/${match[4]}`;
+                        }
+                        
+                        // Fallback to a default educational video
+                        return 'https://www.youtube.com/embed/uVCuz9mHLJ0';
+                    } catch (error) {
+                        console.error('Error extracting video embed URL:', error);
+                        return 'https://www.youtube.com/embed/uVCuz9mHLJ0';
+                    }
+                },
+                
+                // Create a printable version of a slide for PDF export
+                createPrintableSlide(slide, index) {
+                    const slideDiv = document.createElement('div');
+                    slideDiv.className = 'print-slide';
+                    slideDiv.id = `print-slide-${index}`;
+                    
+                    // Add title
+                    const titleDiv = document.createElement('h2');
+                    titleDiv.className = 'slide-title';
+                    titleDiv.textContent = slide.title;
+                    slideDiv.appendChild(titleDiv);
+                    
+                    // Add content
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'slide-content';
+                    
+                    // Process video content for PDF (replace videos with links)
+                    let processedContent = slide.content.replace(
+                        /<div class="video-container">.*?<iframe.*?src="https:\/\/www\.youtube\.com\/embed\/([a-zA-Z0-9_-]+)".*?<\/iframe>.*?<\/div>/gs,
+                        '<p><strong>Video:</strong> <a href="https://www.youtube.com/watch?v=$1" target="_blank">https://www.youtube.com/watch?v=$1</a></p>'
+                    );
+                    
+                    contentDiv.innerHTML = processedContent;
+                    slideDiv.appendChild(contentDiv);
+                    
+                    return slideDiv;
+                },
+                
+                // Download the presentation as PDF
+                async downloadPDF() {
+                    // Show loading overlay
+                    this.isExporting = true;
+                    this.processingSlide = 0;
+                    
+                    try {
+                        const { jsPDF } = window.jspdf;
+                        const pdf = new jsPDF('p', 'mm', 'a4');
+                        const filename = `${this.metadata.subject.replace(/\s+/g, '_')}_${this.metadata.topic.replace(/\s+/g, '_')}.pdf`;
+                        
+                        // Start processing slides
+                        for (let i = 0; i < this.slides.length; i++) {
+                            this.processingSlide = i + 1;
+                            
+                            // Create an offscreen div with the current slide content
+                            const slideDiv = this.createPrintableSlide(this.slides[i], i);
+                            document.body.appendChild(slideDiv);
+                            
+                            // Allow time for browser to render the slide
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            
+                            // Create a canvas from the slide
+                            const canvas = await html2canvas(slideDiv, {
+                                scale: 2,
+                                backgroundColor: '#ffffff',
+                                logging: false,
+                                useCORS: true
+                            });
+                            
+                            // Add a new page if not the first slide
+                            if (i > 0) {
+                                pdf.addPage();
+                            }
+                            
+                            // Add the slide to PDF
+                            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                            const pdfWidth = pdf.internal.pageSize.getWidth();
+                            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                            
+                            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, Math.min(pdfHeight, pdf.internal.pageSize.getHeight()));
+                            
+                            // Remove the temporary slide div
+                            document.body.removeChild(slideDiv);
+                        }
+                        
+                        // Save PDF
+                        pdf.save(filename);
+                        alert(`Your presentation "${filename}" has been successfully downloaded!`);
+                    } catch (error) {
+                        console.error('Error generating PDF:', error);
+                        alert('There was an error generating your PDF. Please try again.');
+                    } finally {
+                        // Hide loading overlay
+                        this.isExporting = false;
+                    }
+                },
+                
+                // Theme management
+                getThemeColors() {
+                    // Add # prefix to hex colors for proper formatting
+                    const themes = {
+                        divi: {
+                            primary: '#F89406',
+                            secondary: '#0C71C3',
+                            text: '#666666',
+                            heading: '#333333',
+                            subtitle: '#999999',
+                            background: '#FFFFFF',
+                            accent: '#7EBEC5'
+                        },
+                        corporate: {
+                            primary: '#0066CC',
+                            secondary: '#003366',
+                            text: '#333333',
+                            heading: '#000000',
+                            subtitle: '#666666',
+                            background: '#FFFFFF',
+                            accent: '#FF9900'
+                        },
+                        academic: {
+                            primary: '#8B0000',
+                            secondary: '#4A235A',
+                            text: '#333333',
+                            heading: '#1A0000',
+                            subtitle: '#555555',
+                            background: '#F8F8F8',
+                            accent: '#DAA520'
+                        }
+                    };
+                    
+                    // Default to divi theme if selected theme not found
+                    return themes[this.selectedTheme || 'divi'];
+                },
+                
+                // Apply selected theme to PowerPoint
+                applyThemeToPPTX(pptx) {
+                    const colors = this.getThemeColors();
+                    
+                    // Instead of defineColors which might not exist in this version,
+                    // we'll set the theme using the basic approach
+                    
+                    // Create slide master with theme colors
+                    try {
+                        pptx.defineSlideMaster({
+                            title: 'MASTER_SLIDE',
+                            background: { color: colors.background },
+                            objects: [
+                                // Footer with page number
+                                { 'text': { text: 'TeachPrep AI | {slideNum}', options: { 
+                                    x: '5%', y: '95%', w: '90%', h: '3%', 
+                                    fontSize: 10, color: colors.subtitle,
+                                    align: 'center'
+                                }}}
+                            ]
+                        });
+                    } catch (error) {
+                        console.warn('Unable to apply theme colors, continuing with default theme:', error);
+                    }
+                },
+                
+                // Helper function to remove HTML tags for plain text in PPT
+                stripHtml(html) {
+                    if (!html) return '';
+                    
+                    try {
+                        // Create a temporary div to hold the HTML content
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = html;
+                        
+                        // Process headings for better formatting
+                        const headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                        headings.forEach(heading => {
+                            // Add line breaks and preserve heading text
+                            const text = heading.textContent;
+                            const newHeading = document.createElement('p');
+                            newHeading.innerHTML = `<strong>${text}</strong>`;
+                            heading.parentNode.replaceChild(newHeading, heading);
+                        });
+                        
+                        // Process lists for better formatting
+                        const listItems = tempDiv.querySelectorAll('li');
+                        listItems.forEach(item => {
+                            // Add bullet points for list items
+                            const text = item.textContent;
+                            const bulletPoint = document.createElement('p');
+                            bulletPoint.textContent = `• ${text}`;
+                            item.parentNode.replaceChild(bulletPoint, item);
+                        });
+                        
+                        // Remove list containers
+                        const lists = tempDiv.querySelectorAll('ul, ol');
+                        lists.forEach(list => {
+                            const fragment = document.createDocumentFragment();
+                            while (list.firstChild) {
+                                fragment.appendChild(list.firstChild);
+                            }
+                            list.parentNode.replaceChild(fragment, list);
+                        });
+                        
+                        // Ensure proper spacing between paragraphs
+                        const paragraphs = tempDiv.querySelectorAll('p');
+                        paragraphs.forEach(p => {
+                            if (!p.textContent.trim()) {
+                                p.parentNode.removeChild(p);
+                            }
+                        });
+                        
+                        return tempDiv.textContent.trim();
+                    } catch (error) {
+                        console.error('Error stripping HTML:', error);
+                        // Fallback method if the DOM approach fails
+                        return html.replace(/<[^>]*>/g, '').trim();
+                    }
+                },
+                
+                // Extract references from HTML content
+                extractReferences(content) {
+                    if (!content) return '';
+                    
+                    try {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = content;
+                        
+                        // Look for research references section
+                        const referenceSection = tempDiv.querySelector('.research-section') || 
+                                               tempDiv.querySelector('.references-list');
+                        
+                        if (referenceSection) {
+                            // Extract list items or reference entries
+                            const refItems = referenceSection.querySelectorAll('li, .research-reference');
+                            if (refItems.length > 0) {
+                                return Array.from(refItems).map(item => item.textContent.trim()).join('\n');
+                            }
+                            
+                            // If no specific items found, return the whole section text
+                            return referenceSection.textContent.trim();
+                        }
+                        
+                        // Look for any references in the content
+                        const possibleRefs = content.match(/Reference[s]?:(.*?)(<\/div>|<\/ul>|<\/section>)/gs);
+                        if (possibleRefs && possibleRefs.length > 0) {
+                            // Extract text and clean up HTML
+                            return possibleRefs.map(ref => ref.replace(/<[^>]*>/g, '').trim()).join('\n');
+                        }
+                        
+                        return 'No references found';
+                    } catch (error) {
+                        console.error('Error extracting references:', error);
+                        return 'Error extracting references';
+                    }
+                },
+                
+                // Extract video details for PPTX
+                extractVideoDetails(content) {
+                    if (!content) return '';
+                    
+                    try {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = content;
+                        
+                        // Get video URL from iframe if present
+                        const iframe = tempDiv.querySelector('iframe');
+                        let videoUrl = '';
+                        if (iframe && iframe.src) {
+                            videoUrl = iframe.src;
+                            
+                            // Convert embed URL to watch URL for display
+                            if (videoUrl.includes('youtube.com/embed/')) {
+                                const videoId = videoUrl.split('/embed/')[1]?.split('?')[0];
+                                if (videoId) {
+                                    videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                                }
+                            }
+                        }
+                        
+                        // Get video title and description
+                        const title = tempDiv.querySelector('.video-title, strong')?.textContent || 'Educational Video';
+                        let description = '';
+                        
+                        // Try to find description in various ways
+                        const descElement = tempDiv.querySelector('.video-description, p');
+                        if (descElement) {
+                            description = descElement.textContent;
+                        } else {
+                            // Remove iframe to get just the description text
+                            if (iframe) iframe.parentNode.removeChild(iframe);
+                            description = tempDiv.textContent.trim();
+                        }
+                        
+                        // Format the text nicely for PowerPoint
+                        let result = `${title}\n\n`;
+                        if (description) result += `${description}\n\n`;
+                        if (videoUrl) result += `Video URL: ${videoUrl}`;
+                        
+                        return result;
+                    } catch (error) {
+                        console.error('Error extracting video details:', error);
+                        return 'Video details not available';
+                    }
+                },
+                
+                // Set up slide appearance based on selected theme
+                updateSlideAppearance() {
+                    // Apply CSS variables based on theme
+                    const slideContainers = document.querySelectorAll('.slide-container');
+                    slideContainers.forEach(container => {
+                        container.className = `slide-container theme-${this.selectedTheme}`;
+                    });
+                },
+                
+                // Get the raw text content from placards
+                getPlacardContent() {
+                    const placardContents = [];
+                    
+                    // Get all placards
+                    const placards = document.querySelectorAll('.placard');
+                    placards.forEach((placard, index) => {
+                        const titleElem = placard.querySelector('.placard-title');
+                        const contentElem = placard.querySelector('.placard-content');
+                        
+                        let title = titleElem ? titleElem.textContent.trim() : `Slide ${index + 1}`;
+                        let content = contentElem ? contentElem.textContent.trim() : '';
+                        
+                        // Check for video elements
+                        const videoElem = placard.querySelector('.video-container iframe');
+                        const videoType = videoElem ? 'video' : 'topic';
+                        
+                        placardContents.push({
+                            index: index,
+                            title: title,
+                            content: content,
+                            type: videoType,
+                            videoUrl: videoElem ? videoElem.src : null
+                        });
+                        
+                        console.log(`Extracted placard ${index} content:`, content.substring(0, 50) + '...');
+                    });
+                    
+                    return placardContents;
+                },
+                
+                // Download the presentation as PPTX using the external generator
+                async downloadPPTX() {
+                    try {
+                        this.showLoading = true;
+                        this.downloadError = null;
+                        
+                        // Call the fixed implementation from fixed-ppt.js
+                        await window.downloadPPTX.call(this);
+                    } catch (error) {
+                        console.error('Error in downloadPPTX:', error);
+                        this.downloadError = 'Failed to generate PowerPoint: ' + error.message;
+                        this.showLoading = false;
+                    }
+                },
+
+                // Generate and download a PowerPoint presentation
+                async generatePPT() {
+                    this.showLoading = true;
+                    this.downloadError = null;
+                    
+                    try {
+                        console.log('Starting PowerPoint generation');
+                        
+                        // Create a new PowerPoint presentation
+                        const pptx = new PptxGenJS();
+                        
+                        // Set theme colors based on selected theme
+                        const colors = {
+                            primary: '#f89406',    // Orange
+                            secondary: '#D97706',  // Darker orange
+                            text: '#333333',       // Dark gray
+                            background: '#ffffff', // White
+                            accent: '#e74c3c',     // Red
+                            subtitle: '#7f8c8d'    // Gray
+                        };
+                        
+                        // Set presentation properties
+                        pptx.layout = 'LAYOUT_16x9';
+                        pptx.title = this.metadata.topic || 'Educational Presentation';
+                        pptx.subject = `Grade Level: ${this.metadata.gradeLevel || 'Not specified'}`;
+                        pptx.author = 'Teaching Materials Generator';
+                        
+                        // Create title slide
+                        const titleSlide = pptx.addSlide();
+                        titleSlide.addText(this.metadata.topic || 'Educational Presentation', {
+                            align: 'center'
+                        });
+                    }
+                    
+                    // Add video URL
+                    slide.addText(`Video URL: https://www.youtube.com/watch?v=${videoId}`, {
+                        x: '10%', y: '70%', w: '80%', h: '5%',
+                        fontSize: 14, color: colors.text
+                    });
+                            this.isExporting = true;
+                            this.processingSlide = 0;
+                            
+                            // We'll use jsPDF to create a PDF
+                            const { jsPDF } = window.jspdf;
+                            const doc = new jsPDF();
+                            
+                            // Title page
+                            doc.setFontSize(24);
+                            doc.setTextColor(248, 148, 6); // Orange color for title
+                            doc.text(this.metadata.topic, 105, 50, { align: 'center' });
+                            
+                            doc.setFontSize(16);
+                            doc.setTextColor(80, 80, 80); // Dark gray
+                            doc.text(`${this.metadata.subject} | ${this.metadata.semester}`, 105, 70, { align: 'center' });
+                            doc.text(`Class Level: ${this.metadata.classNumber}`, 105, 80, { align: 'center' });
+                            doc.text(`Difficulty: ${this.metadata.difficultyLevel}`, 105, 90, { align: 'center' });
+                            
+                            // Add current date
+                            const today = new Date().toLocaleDateString();
+                            doc.setFontSize(12);
+                            doc.text(`Generated on: ${today}`, 105, 110, { align: 'center' });
+                            
+                            let y = 20; // Start position for content
+                            let pageNum = 2; // Start on page 2 after title
+                            
+                            // Process each slide
+                            for (let i = 1; i < this.slides.length; i++) {
+                                this.processingSlide = i;
+                                // Start a new page for each slide
+                                doc.addPage();
+                                y = 20; // Reset Y position
+                                
+                                const slide = this.slides[i];
+                                
+                                // Add title
+                                doc.setFontSize(18);
+                                doc.setTextColor(248, 148, 6); // Orange
+                                doc.text(slide.title, 105, y, { align: 'center' });
+                                y += 15;
+                                
+                                // Process content based on slide type
+                                doc.setFontSize(12);
+                                doc.setTextColor(60, 60, 60); // Dark gray
+                                
+                                if (slide.type === 'topic' || slide.type === 'subtopic') {
+                                    // Add text content
+                                    const content = this.stripHtml(slide.content);
+                                    if (content) {
+                                        const textLines = doc.splitTextToSize(content, 180);
+                                        doc.text(textLines, 15, y);
+                                        y += 10 * textLines.length;
+                                    }
+                                } else if (slide.type === 'references') {
+                                    // Add references
+                                    const refs = this.extractReferences(slide.content).split('\n');
+                                    refs.forEach(ref => {
+                                        if (ref.trim()) {
+                                            const refLines = doc.splitTextToSize(ref, 180);
+                                            if (y + 10 * refLines.length > 280) {
+                                                doc.addPage();
+                                                y = 20;
+                                            }
+                                            doc.text('• ' + refLines[0], 15, y);
+                                            for (let j = 1; j < refLines.length; j++) {
+                                                y += 10;
+                                                doc.text(refLines[j], 20, y); // Indent continuing lines
+                                            }
+                                            y += 15;
+                                        }
+                                    });
+                                } else if (slide.type === 'video') {
+                                    // Add note about video
+                                    doc.text("This slide contains a video reference that can be viewed in the presentation.", 15, y);
+                                    y += 15;
+                                    
+                                    // Extract and add video details
+                                    const videoDetails = this.extractVideoDetails(slide.content);
+                                    if (videoDetails) {
+                                        const videoLines = doc.splitTextToSize(videoDetails, 180);
+                                        doc.text(videoLines, 15, y);
+                                        y += 10 * videoLines.length;
+                                    }
+                                } else if (slide.type.startsWith('mentimeter')) {
+                                    // Handle Mentimeter slides
+                                    let instructions = "Interactive activity using Mentimeter.";
+                                    if (slide.type === 'mentimeter-quiz' || slide.type === 'topic-quiz') {
+                                        instructions = "Quiz questions related to this topic are available via Mentimeter.";
+                                    } else if (slide.type === 'mentimeter-poll') {
+                                        instructions = "Poll questions are available via Mentimeter.";
+                                    } else if (slide.type === 'mentimeter-wordcloud') {
+                                        instructions = slide.mentimeterData && slide.mentimeterData.question 
+                                            ? slide.mentimeterData.question 
+                                            : "Word cloud activity is available via Mentimeter.";
+                                    }
+                                    
+                                    doc.text(instructions, 15, y);
+                                    y += 15;
+                                    
+                                    if (slide.mentimeterData && slide.mentimeterData.sessionCode) {
+                                        doc.text(`Session code: ${slide.mentimeterData.sessionCode}`, 15, y);
+                                        y += 15;
+                                        
+                                        if (slide.mentimeterData.url) {
+                                            doc.text(`URL: ${slide.mentimeterData.url}`, 15, y);
+                                            y += 15;
+                                        }
+                                        
+                                        // Add a note about the QR code
+                                        doc.text("A QR code is available in the PowerPoint presentation for easy access.", 15, y);
+                                        y += 15;
+                                    }
+                                }
+                                
+                                // Add page number at bottom
+                                doc.setFontSize(10);
+                                doc.setTextColor(150, 150, 150); // Light gray
+                                doc.text(`Page ${pageNum}`, 105, 290, { align: 'center' });
+                                pageNum++;
+                            }
+                            
+                            // Save the document
+                            doc.save(`${this.metadata.topic}_Document.pdf`);
+                            
+                            // Hide loading overlay
+                            setTimeout(() => {
+                                this.isExporting = false;
+                            }, 1000);
+                        } catch (error) {
+                            console.error('Error generating Word document:', error);
+                            alert('An error occurred while generating your Word document: ' + error.message);
+                            this.isExporting = false;
+                        }
+                    },
+                    
+                    // Extract references from HTML
+                    extractReferences(html) {
+                        if (!html) return '';
+                        
+                        try {
+                            // Create a temporary div to hold the HTML content
+                            const temp = document.createElement('div');
+                            temp.innerHTML = html;
+                            
+                            // Find all list items (references)
+                            const listItems = temp.querySelectorAll('li');
+                            
+                            // Build a string with references
+                            let references = '';
+                            listItems.forEach(item => {
+                                references += this.stripHtml(item.innerHTML).trim() + '\n\n';
+                            });
+                            
+                            return references;
+                        } catch (error) {
+                            console.error('Error extracting references:', error);
+                            return this.stripHtml(html);
+                        }
+                    },
+                    
+                    // Extract video details from HTML
+                    extractVideoDetails(html) {
+                        if (!html) return '';
+                        
+                        try {
+                            // Create a temporary div to hold the HTML content
+                            const temp = document.createElement('div');
+                            temp.innerHTML = html;
+                            
+                            // Find paragraphs (video description)
+                            const paragraphs = temp.querySelectorAll('p');
+                            
+                            if (paragraphs.length > 0) {
+                                return this.stripHtml(paragraphs[0].innerHTML).trim();
+                            }
+                            
+                            return '';
+                        } catch (error) {
+                            console.error('Error extracting video details:', error);
+                            return '';
+                        }
+                    },
+                    
+                    // Strip HTML from text for PowerPoint display
+                    stripHtml(html) {
+                        if (!html) return '';
+                        
+                        console.log('Original HTML content:', html.substring(0, 100) + '...');
+                        
+                        // Create a temporary element
+                        const temp = document.createElement('div');
+                        temp.innerHTML = html;
+                        
+                        // Remove script and style tags
+                        const scripts = temp.querySelectorAll('script, style');
+                        scripts.forEach(el => el.remove());
+                        
+                        // Replace breaks with newlines for better formatting
+                        const breaks = temp.querySelectorAll('br');
+                        breaks.forEach(br => br.replaceWith('\n'));
+                        
+                        // Replace paragraphs and divs with newlines
+                        const paragraphs = temp.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6, li');
+                        paragraphs.forEach(el => {
+                            el.replaceWith(...el.childNodes);
+                        });
+                        
+                        return temp.innerText.trim();
+                    },
+                    
+                    downloadPPTX() {
+                        try {
+                            this.showLoading = true;
+                            this.downloadError = '';
+                            
+                            // Download the presentation.json file from the server
+                            fetch('/presentation.json')
+                                .then(response => response.json())
+                                .then(data => {
+                                    // Extract the title, topic, and placards
+                                    const title = data.topic || 'Educational Presentation';
+                                    this.metadata = data;
+                                    
+                                    // Create a new PowerPoint presentation
+                                    const pptx = new pptxgen();
+                                    
+                                    try {
+                                        // Create title slide
+                                        const titleSlide = pptx.addSlide();
+                                        titleSlide.addText(title, {
+                                            x: '5%', y: '40%', w: '90%', h: '15%',
+                                            fontSize: 44,
+                                            color: '363636',
+                                            bold: true,
+                                            align: 'center',
+                                            fontFace: 'Arial'
+                                        });
+                                        
+                                        // Add subtitle if available
+                                        if (data.subtitle) {
+                                            titleSlide.addText(data.subtitle, {
+                                                x: '5%', y: '60%', w: '90%', h: '10%',
+                                                fontSize: 24,
+                                                color: '696969',
+                                                align: 'center',
+                                                fontFace: 'Arial'
+                                            });
+                        doc.setTextColor(248, 148, 6); // Orange color for title
+                        doc.text(this.metadata.topic, 105, 50, { align: 'center' });
+                        
+                        doc.setFontSize(16);
+                        doc.setTextColor(80, 80, 80); // Dark gray
+                        doc.text(`${this.metadata.subject} | ${this.metadata.semester}`, 105, 70, { align: 'center' });
+                        doc.text(`Class Level: ${this.metadata.classNumber}`, 105, 80, { align: 'center' });
+                        doc.text(`Difficulty: ${this.metadata.difficultyLevel}`, 105, 90, { align: 'center' });
+                        
+                        // Add current date
+                        const today = new Date().toLocaleDateString();
+                        doc.setFontSize(12);
+                        doc.text(`Generated on: ${today}`, 105, 110, { align: 'center' });
+                        
+                        let y = 20; // Start position for content
+                        let pageNum = 2; // Start on page 2 after title
+                        
+                        // Process each slide
+                        for (let i = 1; i < this.slides.length; i++) {
+                            this.processingSlide = i;
+                            // Start a new page for each slide
+                            doc.addPage();
+                            y = 20; // Reset Y position
+                            
+                            const slide = this.slides[i];
+                            
+                            // Add title
+                            doc.setFontSize(18);
+                            doc.setTextColor(248, 148, 6); // Orange
+                            doc.text(slide.title, 105, y, { align: 'center' });
+                            y += 15;
+                            
+                            // Process content based on slide type
+                            doc.setFontSize(12);
+                            doc.setTextColor(60, 60, 60); // Dark gray
+                            
+                            if (slide.type === 'topic' || slide.type === 'subtopic') {
+                                // Add text content
+                                const content = this.stripHtml(slide.content);
+                                if (content) {
+                                    const textLines = doc.splitTextToSize(content, 180);
+                                    doc.text(textLines, 15, y);
+                                    y += 10 * textLines.length;
+                                }
+                            } else if (slide.type === 'references') {
+                                // Add references
+                                const refs = this.extractReferences(slide.content).split('\n');
+                                refs.forEach(ref => {
+                                    if (ref.trim()) {
+                                        const refLines = doc.splitTextToSize(ref, 180);
+                                        if (y + 10 * refLines.length > 280) {
+                                            doc.addPage();
+                                            y = 20;
+                                        }
+                                        doc.text('• ' + refLines[0], 15, y);
+                                        for (let j = 1; j < refLines.length; j++) {
+                                            y += 10;
+                                            doc.text(refLines[j], 20, y); // Indent continuing lines
+                                        }
+                                        y += 15;
+                                    }
+                                });
+                            } else if (slide.type === 'video') {
+                                // Add note about video
+                                doc.text("This slide contains a video reference that can be viewed in the presentation.", 15, y);
+                                y += 15;
+                                
+                                // Extract and add video details
+                                const videoDetails = this.extractVideoDetails(slide.content);
+                                if (videoDetails) {
+                                    const videoLines = doc.splitTextToSize(videoDetails, 180);
+                                    doc.text(videoLines, 15, y);
+                                    y += 10 * videoLines.length;
+                                }
+                            } else if (slide.type.startsWith('mentimeter')) {
+                                // Handle Mentimeter slides
+                                let instructions = "Interactive activity using Mentimeter.";
+                                if (slide.type === 'mentimeter-quiz' || slide.type === 'topic-quiz') {
+                                    instructions = "Quiz questions related to this topic are available via Mentimeter.";
+                                } else if (slide.type === 'mentimeter-poll') {
+                                    instructions = "Poll questions are available via Mentimeter.";
+                                } else if (slide.type === 'mentimeter-wordcloud') {
+                                    instructions = slide.mentimeterData && slide.mentimeterData.question 
+                                        ? slide.mentimeterData.question 
+                                        : "Word cloud activity is available via Mentimeter.";
+                                }
+                                
+                                doc.text(instructions, 15, y);
+                                y += 15;
+                                
+                                if (slide.mentimeterData && slide.mentimeterData.sessionCode) {
+                                    doc.text(`Session code: ${slide.mentimeterData.sessionCode}`, 15, y);
+                                    y += 15;
+                                    
+                                    if (slide.mentimeterData.url) {
+                                        doc.text(`URL: ${slide.mentimeterData.url}`, 15, y);
+                                        y += 15;
+                                    }
+                                    
+                                    // Add a note about the QR code
+                                    doc.text("A QR code is available in the PowerPoint presentation for easy access.", 15, y);
+                                    y += 15;
+                                }
+                            }
+                            
+                            // Add page number at bottom
+                            doc.setFontSize(10);
+                            doc.setTextColor(150, 150, 150); // Light gray
+                            doc.text(`Page ${pageNum}`, 105, 290, { align: 'center' });
+                            pageNum++;
+                        }
+                        
+                        // Save the document
+                        doc.save(`${this.metadata.topic}_Document.pdf`);
+                        
+                        // Hide loading overlay
+                        setTimeout(() => {
+                            this.isExporting = false;
+                        }, 1000);
+                    } catch (error) {
+                        console.error('Error generating Word document:', error);
+                        alert('An error occurred while generating your Word document: ' + error.message);
+                        this.isExporting = false;
+                    }
+                },
+                
+                // Extract references from HTML
+                extractReferences(html) {
+                    if (!html) return '';
+                    
+                    try {
+                        // Create a temporary div to hold the HTML content
+                        const temp = document.createElement('div');
+                        temp.innerHTML = html;
+                        
+                        // Find all list items (references)
+                        const listItems = temp.querySelectorAll('li');
+                        
+                        // Build a string with references
+                        let references = '';
+                        listItems.forEach(item => {
+                            references += this.stripHtml(item.innerHTML).trim() + '\n\n';
+                        });
+                        
+                        return references;
+                    } catch (error) {
+                        console.error('Error extracting references:', error);
+                        return this.stripHtml(html);
+                    }
+                },
+                
+                // Extract video details from HTML
+                extractVideoDetails(html) {
+                    if (!html) return '';
+                    
+                    try {
+                        // Create a temporary div to hold the HTML content
+                        const temp = document.createElement('div');
+                        temp.innerHTML = html;
+                        
+                        // Find paragraphs (video description)
+                        const paragraphs = temp.querySelectorAll('p');
+                        
+                        if (paragraphs.length > 0) {
+                            return this.stripHtml(paragraphs[0].innerHTML).trim();
+                        }
+                        
+                        return '';
+                    } catch (error) {
+                        console.error('Error extracting video details:', error);
+                        return '';
+                    }
+                },
+                
+                // Strip HTML from text for PowerPoint display
+                stripHtml(html) {
+                    if (!html) return '';
+                    
+                    console.log('Original HTML content:', html.substring(0, 100) + '...');
+                    
+                    // Create a temporary element
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    
+                    // Remove script and style tags
+                    const scripts = temp.querySelectorAll('script, style');
+                    scripts.forEach(el => el.remove());
+                    
+                    // Replace breaks with newlines for better formatting
+                    const breaks = temp.querySelectorAll('br');
+                    breaks.forEach(br => br.replaceWith('\n'));
+                    
+                    // Replace paragraphs and divs with newlines
+                    const paragraphs = temp.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6, li');
+                    paragraphs.forEach(el => {
+                        if (el.textContent && el.textContent.trim() !== '') {
+                            el.insertAdjacentText('afterend', '\n\n');
+                        }
+                    });
+                    
+                    // Get the text content
+                    const textContent = temp.textContent || temp.innerText || '';
+                    const trimmedContent = textContent.replace(/\n{3,}/g, '\n\n').trim();
+                    
+                    console.log('Stripped text content:', trimmedContent.substring(0, 100) + '...');
+                    
+                    return trimmedContent;
+                }
+            };
+        }
+    </script>
+</body>
+</html>

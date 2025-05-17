@@ -1,0 +1,907 @@
+/**
+ * Divi-inspired Theme for Teaching Materials Generator
+ * This stylesheet provides a Divi-like visual experience while maintaining the original application structure
+ */
+
+:root {
+  /* Light theme colors */
+  --divi-primary: #f89406;          /* Primary orange (was blue) */
+  --divi-primary-dark: #d9780f;     /* Darker orange for hover states */
+  --divi-accent: #ffaa33;           /* Orange accent (was teal) */
+  --divi-secondary: #f8f8f8;        /* Very light gray for backgrounds */
+  --divi-dark: #222222;             /* Nearly black for text */
+  --divi-medium: #333333;           /* Dark gray for text */
+  --divi-light: #ffffff;            /* White for backgrounds */
+  --divi-ultralight: #ffffff;       /* White for alternate backgrounds */
+  --divi-success: #47d764;          /* Success green */
+  --divi-warning: #ffaa00;          /* Warning orange */
+  --divi-danger: #e74c3c;           /* Danger red */
+  --divi-info: #ffa500;             /* Info orange (was blue) */
+  
+  /* Typography */
+  --divi-heading-font: 'Open Sans', Arial, sans-serif;
+  --divi-body-font: 'Open Sans', Arial, sans-serif;
+  
+  /* Shadows and effects */
+  --divi-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --divi-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  --divi-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+  
+  /* Spacing */
+  --divi-spacing-xs: 0.5rem;
+  --divi-spacing-sm: 1rem;
+  --divi-spacing-md: 2rem;
+  --divi-spacing-lg: 3rem;
+  --divi-spacing-xl: 5rem;
+  
+  /* Borders */
+  --divi-border-radius: 3px;
+  --divi-border-color: #e0e0e0;
+}
+
+/* Base styles */
+body {
+  font-family: var(--divi-body-font);
+  color: var(--divi-medium);
+  line-height: 1.7;
+  background-color: var(--divi-ultralight);
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--divi-heading-font);
+  color: var(--divi-dark);
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin-bottom: 1.5rem;
+}
+
+a {
+  color: var(--divi-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--divi-primary-dark);
+}
+
+/* Container */
+.container {
+  width: 80%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Header */
+.header {
+  background-color: #fff;
+  box-shadow: var(--divi-shadow);
+  padding: 1rem 0;
+  position: relative;
+  z-index: 100;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.logo a {
+  color: var(--divi-dark);
+  text-decoration: none;
+}
+
+.logo span.highlight {
+  color: var(--divi-primary);
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav a {
+  font-weight: 600;
+  color: var(--divi-dark);
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--divi-primary);
+  transition: width 0.3s ease;
+}
+
+.nav a:hover {
+  color: var(--divi-primary);
+}
+
+.nav a:hover::after,
+.nav a.active::after {
+  width: 100%;
+}
+
+/* Buttons */
+.btn,
+button.btn,
+input[type="submit"].btn {
+  display: inline-block;
+  background-color: var(--divi-primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--divi-border-radius);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  box-shadow: var(--divi-shadow-sm);
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.btn:hover,
+button.btn:hover,
+input[type="submit"].btn:hover {
+  background-color: var(--divi-primary-dark);
+  box-shadow: var(--divi-shadow);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: #f4f4f4;
+  color: var(--divi-dark);
+}
+
+.btn-secondary:hover {
+  background-color: #e8e8e8;
+}
+
+.btn-accent {
+  background-color: var(--divi-accent);
+}
+
+.btn-accent:hover {
+  background-color: #6db0b7;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--divi-primary);
+  color: var(--divi-primary);
+}
+
+.btn-outline:hover {
+  background-color: var(--divi-primary);
+  color: white;
+}
+
+/* Cards */
+.card {
+  background-color: #fff;
+  border-radius: var(--divi-border-radius);
+  overflow: hidden;
+  box-shadow: var(--divi-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 2rem;
+  border: 1px solid #f0f0f0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--divi-shadow-lg);
+}
+
+.card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--divi-border-color);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--divi-border-color);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--divi-dark);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--divi-dark);
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid var(--divi-border-color);
+  border-radius: var(--divi-border-radius);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: var(--divi-primary);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(248, 148, 6, 0.25);
+}
+
+select.form-control {
+  height: calc(2.75rem + 2px);
+}
+
+/* Alerts */
+.alert {
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--divi-border-radius);
+}
+
+.alert-success {
+  background-color: rgba(71, 215, 100, 0.1);
+  border-color: rgba(71, 215, 100, 0.25);
+  color: #2b8339;
+}
+
+.alert-info {
+  background-color: rgba(76, 168, 239, 0.1);
+  border-color: rgba(76, 168, 239, 0.25);
+  color: #2c76b2;
+}
+
+.alert-warning {
+  background-color: rgba(255, 170, 0, 0.1);
+  border-color: rgba(255, 170, 0, 0.25);
+  color: #aa7200;
+}
+
+.alert-danger {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: rgba(231, 76, 60, 0.25);
+  color: #a43025;
+}
+
+/* Sections */
+.section {
+  padding: var(--divi-spacing-lg) 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: var(--divi-spacing-lg);
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 3px;
+  background-color: var(--divi-primary);
+  margin: 1rem auto 0;
+}
+
+/* Hero section */
+.hero {
+  background-color: var(--divi-primary);
+  color: white;
+  padding: var(--divi-spacing-xl) 0;
+  text-align: center;
+}
+
+.hero h1 {
+  color: white;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+}
+
+/* Footer */
+.footer {
+  background-color: #2b3743;
+  color: #f4f4f4;
+  padding: var(--divi-spacing-lg) 0;
+}
+
+.footer a {
+  color: #f4f4f4;
+}
+
+.footer a:hover {
+  color: var(--divi-primary);
+}
+
+.footer-links {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+  margin-bottom: var(--divi-spacing-md);
+}
+
+.footer-column h4 {
+  color: white;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.footer-column h4::after {
+  content: '';
+  display: block;
+  width: 30px;
+  height: 2px;
+  background-color: var(--divi-primary);
+  margin-top: 0.5rem;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 0.5rem;
+}
+
+.copyright {
+  text-align: center;
+  padding-top: var(--divi-spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: var(--divi-spacing-md);
+}
+
+/* Utilities */
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-primary {
+  color: var(--divi-primary);
+}
+
+.bg-primary {
+  background-color: var(--divi-primary);
+  color: white;
+}
+
+.bg-light {
+  background-color: var(--divi-light);
+}
+
+.mb-1 {
+  margin-bottom: var(--divi-spacing-xs);
+}
+
+.mb-2 {
+  margin-bottom: var(--divi-spacing-sm);
+}
+
+.mb-3 {
+  margin-bottom: var(--divi-spacing-md);
+}
+
+.mb-4 {
+  margin-bottom: var(--divi-spacing-lg);
+}
+
+.mt-1 {
+  margin-top: var(--divi-spacing-xs);
+}
+
+.mt-2 {
+  margin-top: var(--divi-spacing-sm);
+}
+
+.mt-3 {
+  margin-top: var(--divi-spacing-md);
+}
+
+.mt-4 {
+  margin-top: var(--divi-spacing-lg);
+}
+
+/* Divi-style elements */
+
+/* Blurb (info card with icon) */
+.divi-blurb {
+  text-align: center;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: var(--divi-border-radius);
+  box-shadow: var(--divi-shadow);
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.divi-blurb:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--divi-shadow-lg);
+}
+
+.divi-blurb-icon {
+  font-size: 3rem;
+  color: var(--divi-primary);
+  margin-bottom: 1.5rem;
+}
+
+.divi-blurb h3 {
+  margin-bottom: 1rem;
+}
+
+/* Call to action */
+.divi-cta {
+  background-color: var(--divi-primary);
+  color: white;
+  padding: 3rem;
+  border-radius: var(--divi-border-radius);
+  text-align: center;
+  margin: 3rem 0;
+}
+
+.divi-cta h2 {
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.divi-cta .btn {
+  background-color: white;
+  color: var(--divi-primary);
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+.divi-cta .btn:hover {
+  background-color: var(--divi-ultralight);
+}
+
+/* Number counter */
+.divi-counter {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.divi-counter-number {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--divi-primary);
+  margin-bottom: 0.5rem;
+}
+
+.divi-counter-title {
+  font-weight: 600;
+  color: var(--divi-dark);
+}
+
+/* Testimonial */
+.divi-testimonial {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: var(--divi-border-radius);
+  box-shadow: var(--divi-shadow);
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.divi-testimonial::before {
+  content: '"';
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  font-size: 4rem;
+  color: rgba(248, 148, 6, 0.1);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.divi-testimonial-content {
+  position: relative;
+  z-index: 1;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+}
+
+.divi-testimonial-author {
+  display: flex;
+  align-items: center;
+}
+
+.divi-testimonial-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 1rem;
+  object-fit: cover;
+}
+
+.divi-testimonial-name {
+  font-weight: 600;
+  color: var(--divi-dark);
+}
+
+.divi-testimonial-position {
+  color: var(--divi-medium);
+  font-size: 0.9rem;
+}
+
+/* Pricing table */
+.divi-pricing {
+  background-color: #fff;
+  border-radius: var(--divi-border-radius);
+  box-shadow: var(--divi-shadow);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.divi-pricing:hover {
+  transform: scale(1.03);
+}
+
+.divi-pricing-header {
+  background-color: var(--divi-primary);
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+
+.divi-pricing-title {
+  font-size: 1.5rem;
+  margin-bottom: 0;
+  color: white;
+}
+
+.divi-pricing-price {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-top: 1rem;
+}
+
+.divi-pricing-period {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.divi-pricing-features {
+  padding: 2rem;
+  text-align: center;
+}
+
+.divi-pricing-features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+}
+
+.divi-pricing-features li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--divi-border-color);
+}
+
+.divi-pricing-features li:last-child {
+  border-bottom: none;
+}
+
+/* Toggle */
+.divi-toggle {
+  margin-bottom: 1rem;
+  border: 1px solid var(--divi-border-color);
+  border-radius: var(--divi-border-radius);
+  overflow: hidden;
+}
+
+.divi-toggle-title {
+  background-color: #f9f9f9;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--divi-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.divi-toggle-title:hover {
+  background-color: #f0f0f0;
+}
+
+.divi-toggle-title::after {
+  content: '+';
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.divi-toggle-title.active::after {
+  content: '-';
+}
+
+.divi-toggle-content {
+  padding: 1.5rem;
+  border-top: 1px solid var(--divi-border-color);
+  display: none;
+}
+
+.divi-toggle-content.active {
+  display: block;
+}
+
+/* Tabs */
+.divi-tabs {
+  margin-bottom: 2rem;
+}
+
+.divi-tabs-nav {
+  display: flex;
+  border-bottom: 1px solid var(--divi-border-color);
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.divi-tabs-nav-item {
+  margin-bottom: -1px;
+}
+
+.divi-tabs-nav-link {
+  display: block;
+  padding: 1rem 1.5rem;
+  color: var(--divi-medium);
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-top-left-radius: var(--divi-border-radius);
+  border-top-right-radius: var(--divi-border-radius);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.divi-tabs-nav-link:hover {
+  border-color: #e9ecef #e9ecef var(--divi-border-color);
+  color: var(--divi-primary);
+}
+
+.divi-tabs-nav-link.active {
+  color: var(--divi-dark);
+  background-color: #fff;
+  border-color: var(--divi-border-color) var(--divi-border-color) #fff;
+}
+
+.divi-tabs-content {
+  padding: 1.5rem;
+  border: 1px solid var(--divi-border-color);
+  border-top: 0;
+  border-bottom-right-radius: var(--divi-border-radius);
+  border-bottom-left-radius: var(--divi-border-radius);
+}
+
+.divi-tab-pane {
+  display: none;
+}
+
+.divi-tab-pane.active {
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+  
+  .header-container {
+    flex-direction: column;
+    padding: 1rem 0;
+  }
+  
+  .logo {
+    margin-bottom: 1rem;
+  }
+  
+  .nav {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .nav a {
+    display: block;
+    padding: 0.5rem;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+  }
+  
+  .footer-column {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+}
+
+/* Light theme is now the default theme */
+/* All styles use light theme by default */
+
+/* Custom styles for placards */
+.placard {
+  background-color: #fff;
+  border-radius: var(--divi-border-radius);
+  box-shadow: var(--divi-shadow);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.placard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--divi-shadow-lg);
+}
+
+.placard-title {
+  background-color: var(--divi-primary);
+  color: white;
+  padding: 1rem 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.placard-content {
+  padding: 1.5rem;
+}
+
+.placard-content iframe {
+  width: 100%;
+  border: none;
+  margin-bottom: 1rem;
+}
+
+.dark-mode .placard {
+  background-color: #333;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 2rem 0;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--divi-primary);
+  color: white;
+  border: none;
+  border-radius: var(--divi-border-radius);
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.action-btn i {
+  margin-right: 0.5rem;
+}
+
+.action-btn:hover {
+  background-color: var(--divi-primary-dark);
+  transform: translateY(-2px);
+}
+
+.action-btn.download-doc {
+  background-color: #4caf50;
+}
+
+.action-btn.download-doc:hover {
+  background-color: #388e3c;
+}
+
+.action-btn.download-pdf {
+  background-color: #f44336;
+}
+
+.action-btn.download-pdf:hover {
+  background-color: #d32f2f;
+}
+
+.action-btn.download-ppt {
+  background-color: #ff9800;
+}
+
+.action-btn.download-ppt:hover {
+  background-color: #f57c00;
+}
+
+.action-btn.print {
+  background-color: #607d8b;
+}
+
+.action-btn.print:hover {
+  background-color: #455a64;
+}
+
+.action-btn.back {
+  background-color: #9e9e9e;
+}
+
+.action-btn.back:hover {
+  background-color: #757575;
+}

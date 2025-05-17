@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT Generator - TeachPrep AI</title>
+    <link rel="stylesheet" href="../css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/divi-theme.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        /* Divi-inspired theme */
+        :root {
+            --divi-primary: #f89406;
+            --divi-secondary: #0c71c3;
+            --divi-text: #666666;
+            --divi-heading: #333333;
+            --divi-light: #f5f5f5;
+            --divi-dark: #2b2b2b;
+            --divi-border: #e0e0e0;
+            --divi-shadow: rgba(0, 0, 0, 0.1);
+            --divi-accent: #7EBEC5;
+        }
+        
+        body {
+            font-family: 'Open Sans', Arial, sans-serif;
+            color: var(--divi-text);
+            background-color: #f9f9f9;
+            line-height: 1.7em;
+        }
+        
+        /* Light theme is now the default */
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-weight: 500;
+            color: var(--divi-heading);
+        }
+        
+        /* Light theme headings are now the default */
+        
+        .container {
+            width: 80%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header & Navigation */
+        .header {
+            background-color: white;
+            box-shadow: 0 1px 0 rgba(0,0,0,.1);
+            padding: 15px 0;
+            position: relative;
+            z-index: 999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Light theme header is now the default */
+        
+        .logo a {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--divi-dark);
+            text-decoration: none;
+        }
+        
+        /* Light theme logo is now the default */
+        
+        .highlight {
+            color: var(--divi-primary);
+        }
+        
+        .nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav a {
+            color: var(--divi-text);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .nav a:hover {
+            color: var(--divi-primary);
+        }
+        
+        /* Light theme nav is now the default */
+        
+        /* Content */
+        .content {
+            padding: 40px 0;
+        }
+        
+        /* Form */
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--divi-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        /* Light theme form container is now the default */
+        
+        .section-title {
+            color: var(--divi-heading);
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-bottom: 1px solid var(--divi-border);
+            padding-bottom: 10px;
+        }
+        
+        /* Light theme section title is now the default */
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--divi-heading);
+        }
+        
+        /* Light theme form group label is now the default */
+        
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--divi-border);
+            border-radius: 4px;
+            font-family: 'Open Sans', Arial, sans-serif;
+            font-size: 14px;
+            color: var(--divi-text);
+            background-color: white;
+        }
+        
+        /* Light theme form inputs are now the default */
+        
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            border-color: var(--divi-primary);
+            outline: none;
+            box-shadow: 0 0 5px rgba(46, 163, 242, 0.3);
+        }
+        
+        /* Placard styles */
+        .placard {
+            background: white;
+            border: 1px solid var(--divi-border);
+            box-shadow: 0 1px 5px var(--divi-shadow);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Light theme placard is now the default */
+        
+        .placard:hover {
+            box-shadow: 0 10px 30px var(--divi-shadow);
+            transform: translateY(-5px);
+        }
+        
+        
+        .placard-header {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid var(--divi-border);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Light theme is now the default */
+            border-bottom-color: #444;
+        }
+        
+        .placard-header h3 {
+            margin-bottom: 5px;
+            margin-top: 0;
+            font-size: 18px;
+            color: var(--divi-primary);
+        }
+        
+        .placard-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--divi-heading);
+            margin-bottom: 10px;
+        }
+        
+        
+        .placard-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .placard-content {
+            margin-bottom: 10px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-label {
+            font-weight: 600;
+            color: var(--divi-secondary);
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        /* Light theme is now the default */
+            color: var(--divi-primary);
+        }
+        
+        .placard-item {
+            background: var(--divi-light);
+            border: 1px solid var(--divi-border);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        
+        .subtopic-header, .video-header, .research-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        /* Grid layout for placards */
+        .placards-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 25px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        
+        /* Responsive grid */
+        @media (min-width: 768px) {
+            .placards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .placards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--divi-border);
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 1px;
+        }
+        
+        /* Light theme is now the default */
+            border-bottom-color: #444;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            color: var(--divi-text);
+            position: relative;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        
+        .tab.active {
+            color: var(--divi-primary);
+        }
+        
+        .tab.active:after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--divi-primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .add-tab {
+            background-color: var(--divi-light);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto 10px;
+            font-size: 18px;
+            padding: 0;
+        }
+        
+        
+        .full-width {
+            width: 100%;
+        }
+        
+        /* Content sections */
+        .content-section {
+            margin-top: 25px;
+            background-color: rgba(46, 163, 242, 0.03);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid rgba(46, 163, 242, 0.1);
+        }
+        
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .small-label {
+            font-size: 14px;
+            color: var(--divi-primary);
+            font-weight: 600;
+        }
+        
+        .btn {
+            background-color: var(--divi-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: var(--divi-secondary);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn.small {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        .btn-primary {
+            background-color: var(--divi-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--divi-secondary);
+        }
+        
+        /* Editable content */
+        [contenteditable="true"] {
+            border: 1px solid var(--divi-border);
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+        
+        
+        [contenteditable="true"]:focus {
+            outline: none;
+            border-color: var(--divi-primary);
+            box-shadow: 0 0 5px rgba(46, 163, 242, 0.3);
+        }
+        
+        /* Video container */
+        .video-container {
+            margin-top: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .video-embed {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--divi-border);
+            background-color: #f0f0f0;
+        }
+        
+        
+        .video-embed iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .video-toggle {
+            display: inline-block;
+            color: var(--divi-primary);
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .video-toggle:hover {
+            color: var(--divi-secondary);
+            text-decoration: underline;
+        }
+        
+        /* Loading spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Error message */
+        .error-message {
+            color: #f44336;
+            background-color: #ffebee;
+            border-radius: 4px;
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-left: 4px solid #f44336;
+        }
+        
+        
+        /* Mentimeter styles */
+        .mentimeter-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .mentimeter-description {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .mentimeter-code {
+            font-weight: bold;
+            color: var(--divi-primary);
+            margin-top: 5px;
+        }
+        
+        .qr-code-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            border: 1px solid var(--divi-border);
+            border-radius: 4px;
+        }
+        
+        .qr-code-label {
+            margin-top: 8px;
+            font-weight: 600;
+            color: var(--divi-secondary);
+        }
+        
+        /* Light theme is now the default */
+            color: var(--divi-primary);
+        }
+        
+        /* Topic quiz section */
+        .topic-quiz-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--divi-border);
+        }
+        
+        /* Dark mode styling removed */
+    </style>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="" x-data="appData()">
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <a href="/"><span style="color: white;">Teach</span><span style="color: var(--divi-primary);">Prep</span><span style="color: white; margin-left: 0.25rem;">AI</span></a>
+            </div>
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/generator" style="color: var(--divi-primary); border-bottom: 2px solid var(--divi-primary);">Generator</a>
+                <a href="/search">Search</a>
+                <a href="/history">History</a>
+                <a href="/about">About</a>
+            </nav>
+            <div class="theme-toggle" @click="toggleTheme()">
+                <!-- Theme toggle removed - light theme only -->
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="generator-container">
+                <h1 class="page-title">Create Your <span class="highlight">PowerPoint</span> Presentation</h1>
+                <p class="description">
+                    Enter your presentation details below to generate content placards. You can edit these placards before generating your final PowerPoint presentation.
+                </p>
+
+                <!-- Generation Form -->
+                <div class="form-container" x-show="!showPlacards">
+                    <h2 class="section-title">Presentation Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="semester">Academic Term:</label>
+                            <input type="text" id="semester" x-model="form.semester" placeholder="e.g., Spring 2025">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject Area:</label>
+                            <input type="text" id="subject" x-model="form.subject" placeholder="e.g., Biology">
+                        </div>
+                        <div class="form-group">
+                            <label for="classNumber">Grade/Class Level:</label>
+                            <input type="text" id="classNumber" x-model="form.classNumber" placeholder="e.g., 10th Grade, College Freshman">
+                        </div>
+                        <div class="form-group">
+                            <label for="topic">Topic:</label>
+                            <input type="text" id="topic" x-model="form.topic" placeholder="e.g., Photosynthesis">
+                        </div>
+                        <div class="form-group">
+                            <label for="difficultyLevel">Difficulty Level:</label>
+                            <select id="difficultyLevel" x-model="form.difficultyLevel" class="form-input">
+                                <option value="">Select Difficulty</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="includeMentimeter">Include Mentimeter Content:</label>
+                            <select id="includeMentimeter" x-model="form.includeMentimeter" class="form-input">
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                            <div class="hint-text">Add interactive quiz and poll placards with QR codes</div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" @click="generatePlacards()" :disabled="isGenerating">
+                            <span class="loading" x-show="isGenerating"></span>
+                            <span x-text="isGenerating ? 'Generating...' : 'Generate Content Placards'"></span>
+                        </button>
+                    </div>
+                    <div class="error-message" x-show="errorMessage" x-text="errorMessage"></div>
+                </div>
+
+                <!-- Placard Editing View -->
+                <div x-show="showPlacards">
+                    <h2 class="section-title">Topic Placards <span class="count">(Edit as needed)</span></h2>
+                    
+                    <!-- Topic Tabs -->
+                    <div class="tabs">
+                        <template x-for="(topic, tabIndex) in placards.topics" :key="tabIndex">
+                            <div class="tab" :class="{ 'active': activeTab === tabIndex }" @click="activeTab = tabIndex">
+                                <span x-text="topic.title || 'Topic ' + (tabIndex + 1)"></span>
+                            </div>
+                        </template>
+                        <div class="tab add-tab" @click="addTopicAndSwitchToIt()">
+                            <span>+</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Topic Content - One tab per topic -->
+                    <template x-for="(topic, topicIndex) in placards.topics" :key="topicIndex">
+                        <div class="tab-content" :class="{ 'active': activeTab === topicIndex }">
+                            <div class="placard full-width">
+                                <div class="placard-header">
+                                    <h3 class="placard-title" x-text="'Topic ' + (topicIndex + 1) + ':'"></h3>
+                                    <div class="placard-title" contenteditable="true" x-text="topic.title" @blur="topic.title = $event.target.innerText"></div>
+                                    <div class="placard-actions">
+                                        <button class="btn" @click="removeTopic(topicIndex)" title="Remove Topic">🗑️</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="placard-content">
+                                    <div class="content-label">Description:</div>
+                                    <div contenteditable="true" x-text="topic.description" @blur="topic.description = $event.target.innerText"></div>
+                                    
+                                    <div class="content-section">
+                                        <div class="section-header">
+                                            <div class="content-label">Subtopics:</div>
+                                            <button class="btn small" @click="addSubtopic(topicIndex)">+ Add</button>
+                                        </div>
+                                        <div class="section-content">
+                                            <template x-for="(subtopic, subtopicIndex) in topic.subtopics" :key="subtopicIndex">
+                                                <div class="placard-item">
+                                                    <div class="subtopic-header">
+                                                        <div contenteditable="true" x-text="subtopic.title || subtopic" @blur="updateSubtopicTitle(topic, subtopicIndex, $event.target.innerText)"></div>
+                                                        <button class="btn" @click="topic.subtopics.splice(subtopicIndex, 1)" title="Remove Subtopic">🗑️</button>
+                                                    </div>
+                                                    <div class="content-label small-label">Description:</div>
+                                                    <div contenteditable="true" x-text="subtopic.description || ''" @blur="updateSubtopicDescription(topic, subtopicIndex, $event.target.innerText)"></div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Videos for this topic -->
+                                    <div class="content-section">
+                                        <div class="section-header">
+                                            <div class="content-label">Video References:</div>
+                                            <button class="btn small" @click="addVideoForTopic(topicIndex)">+ Add</button>
+                                        </div>
+                                        <div class="section-content">
+                                            <template x-for="(video, videoIndex) in placards.videoReferences.filter(v => v.relevantTopicIndex === topicIndex)" :key="videoIndex">
+                                                <div class="placard-item">
+                                                    <div class="video-header">
+                                                        <div contenteditable="true" x-text="video.title" @blur="video.title = $event.target.innerText"></div>
+                                                        <button class="btn" @click="removeVideo(getVideoIndex(video))" title="Remove Video">🗑️</button>
+                                                    </div>
+                                                    <div class="content-label small-label">URL:</div>
+                                                    <div contenteditable="true" x-text="video.url" @blur="video.url = $event.target.innerText; updateVideoEmbed(video);"></div>
+                                                    
+                                                    <!-- Video embed -->
+                                                    <div class="video-container" x-show="video.embedVisible">
+                                                        <div class="video-embed">
+                                                            <iframe :src="getEmbedUrl(video.url)" 
+                                                                    frameborder="0" 
+                                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                                    allowfullscreen>
+                                                            </iframe>
+                                                        </div>
+                                                    </div>
+                                                    <div class="video-actions" style="display: flex; gap: 10px; margin-top: 10px;">
+                                                        <div class="video-toggle" @click="toggleVideoEmbed(video)">
+                                                            <span x-text="video.embedVisible ? 'Hide Video' : 'Show Video'"></span>
+                                                        </div>
+                                                        <div class="video-toggle" @click="searchYouTubeVideos(topic.title, video)">
+                                                            <span>Suggest Videos</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- YouTube Video Suggestions -->
+                                                    <div class="youtube-suggestions" x-show="video.showSuggestions" style="margin-top: 15px; border-top: 1px dashed var(--divi-border);">
+                                                        <div class="content-label" style="margin-top: 10px;">Suggested Videos:</div>
+                                                        <div class="suggestion-loading" x-show="video.isLoading" style="display: flex; justify-content: center; padding: 20px;">
+                                                            <div class="loading"></div>
+                                                            <span>Loading suggested videos...</span>
+                                                        </div>
+                                                        <div class="suggestion-error" x-show="video.error" style="color: #f44336; margin: 10px 0;" x-text="video.error"></div>
+                                                        <div class="suggestion-list" x-show="!video.isLoading && video.suggestions && video.suggestions.length > 0">
+                                                            <template x-for="(suggestion, index) in video.suggestions" :key="suggestion.id">
+                                                                <div class="video-suggestion" style="display: flex; margin-bottom: 15px; padding: 10px; border: 1px solid var(--divi-border); border-radius: 4px; cursor: pointer;" @click="selectYouTubeVideo(video, suggestion)">
+                                                                    <div class="suggestion-thumbnail" style="width: 120px; height: 67px; margin-right: 15px; overflow: hidden; border-radius: 4px;">
+                                                                        <img :src="suggestion.thumbnail" style="width: 100%; height: 100%; object-fit: cover;" alt="Video thumbnail">
+                                                                    </div>
+                                                                    <div class="suggestion-details" style="flex: 1;">
+                                                                        <div class="suggestion-title" style="font-weight: 600; margin-bottom: 5px; color: var(--divi-primary);" x-text="suggestion.title"></div>
+                                                                        <div class="suggestion-channel" style="font-size: 12px; margin-bottom: 5px;" x-text="'Channel: ' + suggestion.channelTitle"></div>
+                                                                        <div class="suggestion-description" style="font-size: 12px; color: var(--divi-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" x-text="suggestion.description"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                        </div>
+                                                        <div class="no-suggestions" x-show="!video.isLoading && (!video.suggestions || video.suggestions.length === 0) && !video.error">
+                                                            <p>No videos found. Try a different search term.</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="content-label small-label">Description:</div>
+                                                    <div contenteditable="true" x-text="video.description" @blur="video.description = $event.target.innerText"></div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Research papers for this topic -->
+                                    <div class="content-section">
+                                        <div class="section-header">
+                                            <div class="content-label">Research References:</div>
+                                            <button class="btn small" @click="addResearchForTopic(topicIndex)">+ Add</button>
+                                        </div>
+                                        <div class="section-content">
+                                            <template x-for="(paper, paperIndex) in placards.researchReferences.filter(p => p.relevantTopicIndex === topicIndex)" :key="paperIndex">
+                                                <div class="placard-item">
+                                                    <div class="research-header">
+                                                        <div contenteditable="true" x-text="paper.title" @blur="paper.title = $event.target.innerText"></div>
+                                                        <button class="btn" @click="removeResearch(getResearchIndex(paper))" title="Remove Research">🗑️</button>
+                                                    </div>
+                                                    <div class="content-label small-label">Authors:</div>
+                                                    <div contenteditable="true" x-text="paper.authors" @blur="paper.authors = $event.target.innerText"></div>
+                                                    <div class="content-label small-label">URL:</div>
+                                                    <div contenteditable="true" x-text="paper.url" @blur="paper.url = $event.target.innerText"></div>
+                                                    <div class="content-label small-label">Description:</div>
+                                                    <div contenteditable="true" x-text="paper.description" @blur="paper.description = $event.target.innerText"></div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Topic quiz section -->
+                                    <div class="topic-quiz-section" x-show="topic.mentimeterData && topic.mentimeterData.type === 'topic-quiz'">
+                                        <div class="content-label">Quiz Questions</div>
+                                        <div class="mentimeter-description">
+                                            <p>Interactive quiz specifically for this topic</p>
+                                            <p class="mentimeter-code" x-text="topic.mentimeterData.sessionCode"></p>
+                                        </div>
+                                        <div class="qr-code-container">
+                                            <img :src="topic.mentimeterData.qrCodeUrl" alt="Quiz QR Code" class="qr-code">
+                                            <p class="qr-code-label">Scan to answer questions!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <div class="form-actions">
+                        <button class="btn" @click="showPlacards = false">Back to Form</button>
+                        <button class="btn btn-primary" @click="generatePPT()" :disabled="isGeneratingPPT">
+                            <span class="loading" x-show="isGeneratingPPT"></span>
+                            <span x-text="isGeneratingPPT ? 'Generating...' : 'Generate PowerPoint'"></span>
+                        </button>
+                    </div>
+                    <div class="error-message" x-show="errorMessage" x-text="errorMessage"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="copyright">&copy; 2025 TeachPrep AI. All rights reserved.</div>
+        </footer>
+    </div>
+
+    <script>
+        function appData() {
+            return {
+                // Initial states
+                // Dark mode removed
+                isDarkMode: false,
+                showPlacards: false,
+                activeTab: 0,
+                isGenerating: false,
+                isGeneratingPPT: false,
+                errorMessage: '',
+                
+                // Form data
+                form: {
+                    semester: '',
+                    subject: '',
+                    classNumber: '',
+                    topic: '',
+                    difficultyLevel: 'Beginner',
+                    includeMentimeter: 'yes'
+                },
+                
+                // Placards data
+                placards: {
+                    topics: [
+                        {
+                            title: "Sample Topic 1",
+                            subtopics: [{title: "Sample Subtopic 1.1", description: "This is a sample subtopic description"}, "Sample Subtopic 1.2"],
+                            description: "This is a sample topic description. Edit this content to customize for your lesson."
+                        },
+                        {
+                            title: "Sample Topic 2",
+                            subtopics: ["Sample Subtopic 2.1", "Sample Subtopic 2.2"],
+                            description: "This is another sample topic description. Edit this content to customize for your lesson."
+                        }
+                    ],
+                    videoReferences: [
+                        {
+                            title: "Introduction to the Subject",
+                            url: "https://www.youtube.com/watch?v=sample1",
+                            description: "A comprehensive introduction to the main concepts of this topic",
+                            relevantTopicIndex: 0,
+                            embedVisible: false
+                        },
+                        {
+                            title: "Advanced Concepts",
+                            url: "https://www.youtube.com/watch?v=sample2",
+                            description: "Detailed explanation of advanced concepts covered in the second topic",
+                            relevantTopicIndex: 1,
+                            embedVisible: false
+                        }
+                    ],
+                    researchReferences: [
+                        {
+                            title: "Research on Topic 1",
+                            authors: "Smith, J. & Johnson, A.",
+                            url: "https://academic-journal.com/sample1",
+                            description: "A peer-reviewed study covering key aspects of the first topic",
+                            relevantTopicIndex: 0
+                        },
+                        {
+                            title: "Latest Research on Topic 2",
+                            authors: "Williams, R. & Brown, T.",
+                            url: "https://academic-journal.com/sample2",
+                            description: "Recent findings related to the second topic with practical implications",
+                            relevantTopicIndex: 1
+                        }
+                    ]
+                },
+                
+                // Initialize
+                init() {
+                    // Always use light theme
+                    localStorage.setItem('darkMode', 'false');
+                },
+                
+                // Theme functionality removed - using light theme only
+                toggleTheme(save = true) {
+                    // Light theme is now the default
+                    this.isDarkMode = false;
+                    if (save) {
+                        localStorage.setItem('darkMode', 'false');
+                    }
+                },
+                
+                // Generate placards from form
+                async generatePlacards() {
+                    if (!this.form.semester || !this.form.subject || !this.form.classNumber || !this.form.topic || !this.form.difficultyLevel) {
+                        this.errorMessage = 'All fields are required';
+                        return;
+                    }
+                    
+                    this.isGenerating = true;
+                    this.errorMessage = '';
+                    
+                    try {
+                        const response = await fetch('/api/generate-placards', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.form),
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Failed to generate content');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        // Initialize placards with the generated content
+                        this.placards = data;
+                        
+                        // Show the placards view
+                        this.showPlacards = true;
+                        
+                        // Generate Mentimeter content if requested
+                        if (this.form.includeMentimeter === 'yes') {
+                            await this.generateMentimeterContent();
+                        }
+                    } catch (error) {
+                        this.errorMessage = error.message || 'An error occurred while generating content';
+                        console.error('Error generating content:', error);
+                    } finally {
+                        this.isGenerating = false;
+                    }
+                },
+                
+                // Generate Mentimeter content
+                async generateMentimeterContent() {
+                    try {
+                        // Get topic titles for topic-specific quizzes
+                        const topicList = this.placards.topics
+                            .filter(topic => !topic.type || !topic.type.includes('mentimeter'))
+                            .map(topic => ({
+                                title: topic.title,
+                                id: topic.id
+                            }));
+                            
+                        const response = await fetch('/api/generate-quiz-poll', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                topic: this.form.topic,
+                                difficultyLevel: this.form.difficultyLevel,
+                                questionCount: 6,
+                                topicList: topicList
+                            }),
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to generate Mentimeter content');
+                        }
+                        
+                        const mentimeterData = await response.json();
+                        
+                        // Store the mentimeter data
+                        this.placards.mentimeterContent = mentimeterData;
+                        
+                        // Add poll placard (only one poll for the entire presentation)
+                        this.placards.topics.push({
+                            id: 'poll-placard',
+                            title: 'Class Poll',
+                            type: 'mentimeter-poll',
+                            content: `<div class="mentimeter-content">
+                                <div class="content-label">Poll Questions (${mentimeterData.pollQuestions.length})</div>
+                                <div class="mentimeter-description">
+                                    <p>Interactive class poll to gather opinions on ${this.form.topic}</p>
+                                    <p class="mentimeter-code">Session code: ${mentimeterData.mentimeterSession.sessionCode}</p>
+                                </div>
+                                <div class="qr-code-container">
+                                    <img src="${mentimeterData.mentimeterSession.pollQrCodeUrl}" alt="Poll QR Code" class="qr-code">
+                                    <p class="qr-code-label">Scan to participate!</p>
+                                </div>
+                            </div>`,
+                            mentimeterData: {
+                                type: 'poll',
+                                sessionCode: mentimeterData.mentimeterSession.sessionCode,
+                                url: mentimeterData.mentimeterSession.pollUrl,
+                                qrCodeUrl: mentimeterData.mentimeterSession.pollQrCodeUrl,
+                                questions: mentimeterData.pollQuestions
+                            }
+                        });
+                        
+                        // Add word cloud placard
+                        this.placards.topics.push({
+                            id: 'wordcloud-placard',
+                            title: 'Word Cloud Activity',
+                            type: 'mentimeter-wordcloud',
+                            content: `<div class="mentimeter-content">
+                                <div class="content-label">Word Cloud Activity</div>
+                                <div class="mentimeter-description">
+                                    <p>${mentimeterData.wordCloud.question}</p>
+                                    <p class="mentimeter-code">Session code: ${mentimeterData.mentimeterSession.sessionCode}</p>
+                                </div>
+                                <div class="qr-code-container">
+                                    <img src="${mentimeterData.mentimeterSession.wordCloudQrCodeUrl}" alt="Word Cloud QR Code" class="qr-code">
+                                    <p class="qr-code-label">Scan to contribute!</p>
+                                </div>
+                            </div>`,
+                            mentimeterData: {
+                                type: 'wordcloud',
+                                sessionCode: mentimeterData.mentimeterSession.sessionCode,
+                                url: mentimeterData.mentimeterSession.wordCloudUrl,
+                                qrCodeUrl: mentimeterData.mentimeterSession.wordCloudQrCodeUrl,
+                                question: mentimeterData.wordCloud.question,
+                                suggestedWords: mentimeterData.wordCloud.suggestedWords
+                            }
+                        });
+                        
+                        // Instead of adding a separate quiz placard, add quiz to each topic
+                        if (mentimeterData.topicQuizzes && Array.isArray(mentimeterData.topicQuizzes)) {
+                            // For each topic, find the corresponding quiz and add it to that topic
+                            mentimeterData.topicQuizzes.forEach(topicQuiz => {
+                                const topicIndex = topicQuiz.topicIndex;
+                                if (topicIndex >= 0 && topicIndex < this.placards.topics.length) {
+                                    const topic = this.placards.topics[topicIndex];
+                                    
+                                    // Skip if it's already a mentimeter type
+                                    if (topic.type && topic.type.includes('mentimeter')) {
+                                        return;
+                                    }
+                                    
+                                    // Add quiz information to the topic
+                                    if (!topic.content.includes('Quiz Questions')) {
+                                        topic.content += `
+                                        <div class="topic-quiz-section">
+                                            <div class="content-label">Quiz Questions (${topicQuiz.questions.length})</div>
+                                            <div class="mentimeter-description">
+                                                <p>Interactive quiz specifically for this topic</p>
+                                                <p class="mentimeter-code">Session code: ${topicQuiz.sessionCode}</p>
+                                            </div>
+                                            <div class="qr-code-container">
+                                                <img src="${topicQuiz.qrCodeUrl}" alt="Quiz QR Code" class="qr-code">
+                                                <p class="qr-code-label">Scan to answer questions!</p>
+                                            </div>
+                                        </div>`;
+                                        
+                                        // Store mentimeter data with the topic
+                                        topic.mentimeterData = {
+                                            type: 'topic-quiz',
+                                            sessionCode: topicQuiz.sessionCode,
+                                            url: topicQuiz.quizUrl,
+                                            qrCodeUrl: topicQuiz.qrCodeUrl,
+                                            questions: topicQuiz.questions
+                                        };
+                                    }
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error generating Mentimeter content:', error);
+                        // Continue without Mentimeter content if there's an error
+                    }
+                },
+                
+                // Video methods
+                addVideoForTopic(topicIndex) {
+                    this.placards.videoReferences.push({
+                        title: "New Video Reference",
+                        url: "",
+                        description: "Enter video description here...",
+                        relevantTopicIndex: topicIndex,
+                        embedVisible: false,
+                        showSuggestions: false,
+                        isLoading: false,
+                        suggestions: [],
+                        error: null
+                    });
+                },
+                
+                getVideoIndex(video) {
+                    return this.placards.videoReferences.findIndex(v => v === video);
+                },
+                
+                removeVideo(index) {
+                    this.placards.videoReferences.splice(index, 1);
+                },
+                
+                toggleVideoEmbed(video) {
+                    video.embedVisible = !video.embedVisible;
+                },
+                
+                // YouTube video search and suggestion functions
+                async searchYouTubeVideos(topicTitle, video) {
+                    // Toggle suggestions panel
+                    video.showSuggestions = !video.showSuggestions;
+                    
+                    // If closing panel, or already have suggestions, just return
+                    if (!video.showSuggestions || (video.suggestions && video.suggestions.length > 0)) {
+                        return;
+                    }
+                    
+                    // Show loading status
+                    video.isLoading = true;
+                    video.error = null;
+                    
+                    try {
+                        // Default to topic title if provided
+                        const searchQuery = topicTitle || 'educational content';
+                        
+                        // Add educational keywords to improve search relevance
+                        const enhancedQuery = `${searchQuery} educational lecture`;
+                        
+                        // Call the YouTube API endpoint
+                        const response = await fetch(`/api/youtube-search?query=${encodeURIComponent(enhancedQuery)}&maxResults=5`);
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Failed to search YouTube videos');
+                        }
+                        
+                        const data = await response.json();
+                        video.suggestions = data.videos;
+                        
+                        if (data.videos.length === 0) {
+                            video.error = 'No videos found for this topic. Try a different search term.';
+                        }
+                    } catch (error) {
+                        console.error('Error searching YouTube videos:', error);
+                        video.error = error.message || 'Failed to search YouTube videos';
+                    } finally {
+                        video.isLoading = false;
+                    }
+                },
+                
+                // Select a YouTube video from suggestions
+                selectYouTubeVideo(video, suggestion) {
+                    // Update video details with the selected YouTube video
+                    video.title = suggestion.title;
+                    video.url = suggestion.url;
+                    video.description = suggestion.description;
+                    
+                    // Show the video
+                    video.embedVisible = true;
+                    
+                    // Hide suggestions after selection
+                    video.showSuggestions = false;
+                    
+                    // Clear suggestions (they'll be reloaded if user clicks suggestion again)
+                    video.suggestions = [];
+                },
+                
+                // Topic methods
+                addTopic() {
+                    this.placards.topics.push({
+                        title: 'New Topic',
+                        subtopics: [{title: "New Subtopic", description: "Enter subtopic description here..."}],
+                        description: 'Enter topic description here...'
+                    });
+                },
+                
+                addTopicAndSwitchToIt() {
+                    this.addTopic();
+                    this.activeTab = this.placards.topics.length - 1;
+                },
+                
+                removeTopic(topicIndex) {
+                    // Remove this topic
+                    this.placards.topics.splice(topicIndex, 1);
+                    
+                    // Update relevantTopicIndex for videos and research papers
+                    // First, remove all references to this topic
+                    this.placards.videoReferences = this.placards.videoReferences.filter(
+                        v => v.relevantTopicIndex !== topicIndex
+                    );
+                    
+                    this.placards.researchReferences = this.placards.researchReferences.filter(
+                        r => r.relevantTopicIndex !== topicIndex
+                    );
+                    
+                    // Then adjust indices for items that were after this topic
+                    this.placards.videoReferences.forEach(video => {
+                        if (video.relevantTopicIndex > topicIndex) {
+                            video.relevantTopicIndex--;
+                        }
+                    });
+                    
+                    this.placards.researchReferences.forEach(paper => {
+                        if (paper.relevantTopicIndex > topicIndex) {
+                            paper.relevantTopicIndex--;
+                        }
+                    });
+                    
+                    // Update active tab if necessary
+                    if (this.activeTab >= this.placards.topics.length) {
+                        this.activeTab = this.placards.topics.length - 1;
+                    }
+                },
+                
+                // Generate PowerPoint from edited placards
+                async generatePPT() {
+                    if (this.placards.topics.length === 0) {
+                        this.errorMessage = 'Please add at least one topic';
+                        return;
+                    }
+                    
+                    this.isGeneratingPPT = true;
+                    this.errorMessage = '';
+                    
+                    try {
+                        const metadata = {
+                            subject: this.form.subject,
+                            topic: this.form.topic,
+                            classNumber: this.form.classNumber,
+                            semester: this.form.semester,
+                            difficultyLevel: this.form.difficultyLevel,
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        // Process topics to ensure videos are working
+                        const processedTopics = this.placards.topics.map(topic => {
+                            const newTopic = {...topic};
+                            
+                            // Ensure video reference has a valid URL
+                            if (newTopic.videoReference) {
+                                if (!this.isValidYouTubeUrl(newTopic.videoReference.url)) {
+                                    newTopic.videoReference.url = this.getReliableVideoUrl(newTopic.title);
+                                }
+                            } else {
+                                newTopic.videoReference = {
+                                    title: `Video for ${newTopic.title}`,
+                                    url: this.getReliableVideoUrl(newTopic.title),
+                                    description: `Educational video about ${newTopic.title}`
+                                };
+                            }
+                            
+                            return newTopic;
+                        });
+                        
+                        // Store directly in localStorage without going through API
+                        const presentationId = 'ppt_' + new Date().getTime();
+                        localStorage.setItem(presentationId, JSON.stringify({
+                            slides: processedTopics,
+                            metadata: metadata
+                        }));
+                        
+                        // Add to history
+                        this.addToHistory({slides: processedTopics}, metadata);
+                        
+                        // Redirect to preview with the ID
+                        window.location.href = `/preview-ppt?id=${presentationId}`;
+                    } catch (error) {
+                        this.errorMessage = error.message || 'An error occurred while generating PowerPoint';
+                        console.error('Error generating PowerPoint:', error);
+                    } finally {
+                        this.isGeneratingPPT = false;
+                    }
+                },
+                
+                // Get a reliable educational YouTube video for a topic
+                getReliableVideoUrl(topic) {
+                    // Collection of reliable educational videos that are guaranteed to be available
+                    const reliableVideos = [
+                        // Khan Academy videos
+                        'https://www.youtube.com/watch?v=uVCuz9mHLJ0', // Physics
+                        'https://www.youtube.com/watch?v=TcZmdOfFzGI', // Mathematics
+                        'https://www.youtube.com/watch?v=ew8HaoIL4NI', // Biology
+                        'https://www.youtube.com/watch?v=sQK3Yr4Sc_k', // Chemistry
+                        
+                        // Crash Course videos
+                        'https://www.youtube.com/watch?v=Q16E4_pKUz0', // Education
+                        'https://www.youtube.com/watch?v=TnzcwTyr6cE', // History
+                        'https://www.youtube.com/watch?v=7KXG2AOs9XE', // Astronomy
+                        'https://www.youtube.com/watch?v=3ez10ADR_gM', // Computer Science
+                        
+                        // TED-Ed videos
+                        'https://www.youtube.com/watch?v=eWN2AdnJ4E0', // Education
+                        'https://www.youtube.com/watch?v=fxbCHn6gE3U', // Science
+                        'https://www.youtube.com/watch?v=5hPnmI2Gjo4', // Math
+                        'https://www.youtube.com/watch?v=CeZlbPXjHrU'  // Literature
+                    ];
+                    
+                    // Semi-random selection that's consistent for the same topic
+                    const hash = this.simpleHash(topic);
+                    const index = Math.abs(hash) % reliableVideos.length;
+                    return reliableVideos[index];
+                },
+                
+                // Simple string hash function
+                simpleHash(str) {
+                    let hash = 0;
+                    for (let i = 0; i < str.length; i++) {
+                        const char = str.charCodeAt(i);
+                        hash = ((hash << 5) - hash) + char;
+                        hash = hash & hash; // Convert to 32bit integer
+                    }
+                    return hash;
+                },
+                
+                // Check if a URL is a valid YouTube URL
+                isValidYouTubeUrl(url) {
+                    try {
+                        if (!url || typeof url !== 'string') return false;
+                        
+                        // Check for standard YouTube URL formats
+                        if (url.includes('youtube.com/watch') || url.includes('youtu.be/')) {
+                            return true;
+                        }
+                        
+                        // Check for embed URLs
+                        if (url.includes('youtube.com/embed/')) {
+                            return true;
+                        }
+                        
+                        return false;
+                    } catch (e) {
+                        return false;
+                    }
+                },
+                
+                // Add to history
+                addToHistory(pptData, metadata) {
+                    const historyItem = {
+                        id: Date.now().toString(),
+                        title: `${metadata.subject} - ${metadata.topic}`,
+                        timestamp: new Date().toISOString(),
+                        pptData: pptData,
+                        metadata: metadata
+                    };
+                    
+                    let history = JSON.parse(localStorage.getItem('pptHistory') || '[]');
+                    history.unshift(historyItem);
+                    
+                    // Limit history to 20 items
+                    if (history.length > 20) {
+                        history = history.slice(0, 20);
+                    }
+                    
+                    localStorage.setItem('pptHistory', JSON.stringify(history));
+                }
+            };
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentimeter Quiz & Poll Generator</title>
+    <link rel="stylesheet" href="../css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/divi-theme.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-orange-600 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <a href="/" class="text-xl font-bold flex items-center">
+                    <i class="fas fa-graduation-cap mr-2"></i>
+                    <span>Teaching Materials Generator</span>
+                </a>
+            </div>
+            <div class="space-x-4 hidden md:flex">
+                <a href="/" class="hover:text-orange-200 transition-colors">Home</a>
+                <a href="/generator" class="hover:text-orange-200 transition-colors">Generator</a>
+                <a href="/preview-ppt" class="hover:text-orange-200 transition-colors">Preview</a>
+                <a href="/search" class="hover:text-orange-200 transition-colors">Search</a>
+                <a href="/mentimeter" class="hover:text-orange-200 transition-colors font-bold underline">Mentimeter</a>
+                <a href="/history" class="hover:text-orange-200 transition-colors">History</a>
+                <a href="/about" class="hover:text-orange-200 transition-colors">About</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden mt-2 p-2 bg-orange-700 rounded-md">
+            <a href="/" class="block py-2 px-4 hover:bg-orange-800 rounded">Home</a>
+            <a href="/generator" class="block py-2 px-4 hover:bg-orange-800 rounded">Generator</a>
+            <a href="/preview-ppt" class="block py-2 px-4 hover:bg-orange-800 rounded">Preview</a>
+            <a href="/search" class="block py-2 px-4 hover:bg-orange-800 rounded">Search</a>
+            <a href="/mentimeter" class="block py-2 px-4 bg-orange-800 rounded font-bold">Mentimeter</a>
+            <a href="/history" class="block py-2 px-4 hover:bg-orange-800 rounded">History</a>
+            <a href="/about" class="block py-2 px-4 hover:bg-orange-800 rounded">About</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-4 md:p-6 flex-grow">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Form Section -->
+            <div class="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Generate Mentimeter Content</h2>
+                <form id="mentimeter-form" class="space-y-4">
+                    <div>
+                        <label for="topic" class="block text-sm font-medium text-gray-700 mb-1">Topic</label>
+                        <input type="text" id="topic" name="topic" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500" 
+                            placeholder="e.g., Photosynthesis" required>
+                    </div>
+                    
+                    <div>
+                        <label for="difficultyLevel" class="block text-sm font-medium text-gray-700 mb-1">Difficulty Level</label>
+                        <select id="difficultyLevel" name="difficultyLevel" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500" required>
+                            <option value="">Select Difficulty Level</option>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="questionCount" class="block text-sm font-medium text-gray-700 mb-1">Number of Questions</label>
+                        <input type="number" id="questionCount" name="questionCount" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500" 
+                            min="1" max="10" value="5" required>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button type="submit" 
+                            class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors">
+                            <i class="fas fa-magic mr-2"></i> Generate Mentimeter Content
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">Export Options</h3>
+                    <div class="space-y-2">
+                        <button id="copyToClipboard" disabled 
+                            class="w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-copy mr-2"></i> Copy to Clipboard
+                        </button>
+                        <button id="downloadJson" disabled 
+                            class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-download mr-2"></i> Download JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="w-full md:w-2/3">
+                <div id="loading" class="hidden">
+                    <div class="flex justify-center items-center h-64">
+                        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-orange-600"></div>
+                    </div>
+                    <p class="text-center text-gray-600 mt-4">Generating your Mentimeter content...</p>
+                </div>
+                
+                <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+                    <p class="font-bold">Error</p>
+                    <p id="error-text"></p>
+                </div>
+                
+                <div id="result-container" class="hidden space-y-6">
+                    <!-- Quiz Section -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-question-circle text-orange-600 mr-2"></i> Quiz Questions
+                        </h2>
+                        <div id="quiz-questions" class="space-y-6"></div>
+                    </div>
+                    
+                    <!-- Poll Section -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-poll text-purple-600 mr-2"></i> Poll Questions
+                        </h2>
+                        <div id="poll-questions" class="space-y-6"></div>
+                    </div>
+                    
+                    <!-- Word Cloud Section -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-cloud text-orange-600 mr-2"></i> Word Cloud
+                        </h2>
+                        <div id="word-cloud" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-orange-600 text-white p-4 text-center">
+        <p>© 2025 Teaching Materials Generator | Developed for Educational Use</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Form submission
+        document.getElementById('mentimeter-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const topic = document.getElementById('topic').value;
+            const difficultyLevel = document.getElementById('difficultyLevel').value;
+            const questionCount = document.getElementById('questionCount').value;
+            
+            // Show loading, hide results and errors
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('result-container').classList.add('hidden');
+            document.getElementById('error-message').classList.add('hidden');
+            
+            // Disable export buttons
+            document.getElementById('copyToClipboard').disabled = true;
+            document.getElementById('downloadJson').disabled = true;
+            
+            try {
+                const response = await fetch('/api/generate-quiz-poll', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        topic,
+                        difficultyLevel,
+                        questionCount: parseInt(questionCount)
+                    }),
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to generate Mentimeter content');
+                }
+                
+                const data = await response.json();
+                displayResults(data);
+                
+                // Enable export buttons
+                document.getElementById('copyToClipboard').disabled = false;
+                document.getElementById('downloadJson').disabled = false;
+                
+                // Store the generated content for export actions
+                window.mentimeterContent = data;
+                
+            } catch (error) {
+                document.getElementById('error-message').classList.remove('hidden');
+                document.getElementById('error-text').textContent = error.message || 'An unexpected error occurred';
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        });
+        
+        // Display all the results
+        function displayResults(data) {
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.classList.remove('hidden');
+            
+            // Display quiz questions
+            displayQuizQuestions(data.quizQuestions || []);
+            
+            // Display poll questions
+            displayPollQuestions(data.pollQuestions || []);
+            
+            // Display word cloud
+            displayWordCloud(data.wordCloud || {});
+        }
+        
+        // Display quiz questions
+        function displayQuizQuestions(quizQuestions) {
+            const quizContainer = document.getElementById('quiz-questions');
+            quizContainer.innerHTML = '';
+            
+            if (quizQuestions.length === 0) {
+                quizContainer.innerHTML = '<p class="text-gray-500 italic">No quiz questions generated.</p>';
+                return;
+            }
+            
+            quizQuestions.forEach((quiz, index) => {
+                const quizElement = document.createElement('div');
+                quizElement.className = 'border border-gray-200 rounded-lg p-4';
+                
+                let optionsHtml = '';
+                quiz.options.forEach((option, optionIndex) => {
+                    const isCorrect = optionIndex === quiz.correctAnswer;
+                    optionsHtml += `
+                        <div class="flex items-start mt-2">
+                            <div class="flex items-center h-5">
+                                <input type="radio" disabled ${isCorrect ? 'checked' : ''} 
+                                    class="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label class="${isCorrect ? 'font-medium text-green-600' : 'text-gray-700'}">
+                                    ${option}
+                                    ${isCorrect ? ' <span class="text-green-600 ml-2">(Correct)</span>' : ''}
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                quizElement.innerHTML = `
+                    <h3 class="text-lg font-semibold text-gray-800">Q${index + 1}: ${quiz.question}</h3>
+                    <div class="mt-3">
+                        ${optionsHtml}
+                    </div>
+                    <div class="mt-4 bg-orange-50 p-3 rounded">
+                        <p class="text-sm text-orange-700"><strong>Explanation:</strong> ${quiz.explanation}</p>
+                    </div>
+                `;
+                
+                quizContainer.appendChild(quizElement);
+            });
+        }
+        
+        // Display poll questions
+        function displayPollQuestions(pollQuestions) {
+            const pollContainer = document.getElementById('poll-questions');
+            pollContainer.innerHTML = '';
+            
+            if (pollQuestions.length === 0) {
+                pollContainer.innerHTML = '<p class="text-gray-500 italic">No poll questions generated.</p>';
+                return;
+            }
+            
+            pollQuestions.forEach((poll, index) => {
+                const pollElement = document.createElement('div');
+                pollElement.className = 'border border-gray-200 rounded-lg p-4';
+                
+                let optionsHtml = '';
+                poll.options.forEach((option) => {
+                    optionsHtml += `
+                        <div class="flex items-start mt-2">
+                            <div class="flex items-center h-5">
+                                <input type="${poll.questionType === 'multiple-choice' ? 'checkbox' : 'radio'}" disabled 
+                                    class="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label class="text-gray-700">${option}</label>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                pollElement.innerHTML = `
+                    <div class="flex items-center mb-2">
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+                            ${poll.questionType || 'Poll'}
+                        </span>
+                        <h3 class="text-lg font-semibold text-gray-800">Poll ${index + 1}: ${poll.question}</h3>
+                    </div>
+                    <div class="mt-3">
+                        ${optionsHtml}
+                    </div>
+                `;
+                
+                pollContainer.appendChild(pollElement);
+            });
+        }
+        
+        // Display word cloud
+        function displayWordCloud(wordCloud) {
+            const wordCloudContainer = document.getElementById('word-cloud');
+            wordCloudContainer.innerHTML = '';
+            
+            if (!wordCloud.question) {
+                wordCloudContainer.innerHTML = '<p class="text-gray-500 italic">No word cloud generated.</p>';
+                return;
+            }
+            
+            const wordCloudElement = document.createElement('div');
+            wordCloudElement.className = 'border border-gray-200 rounded-lg p-4';
+            
+            let wordsHtml = '';
+            if (wordCloud.suggestedWords && wordCloud.suggestedWords.length > 0) {
+                wordsHtml = wordCloud.suggestedWords.map(word => {
+                    const fontSize = Math.random() * (1.5 - 0.8) + 0.8;
+                    return `<span class="inline-block m-1 px-2 py-1 bg-orange-100 text-orange-800 rounded" 
+                        style="font-size: ${fontSize}rem">${word}</span>`;
+                }).join('');
+            }
+            
+            wordCloudElement.innerHTML = `
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">${wordCloud.question}</h3>
+                <div class="p-3 bg-gray-50 rounded">
+                    <p class="text-sm text-gray-500 mb-3">Sample word cloud (for preview only):</p>
+                    <div class="flex flex-wrap justify-center">
+                        ${wordsHtml}
+                    </div>
+                </div>
+            `;
+            
+            wordCloudContainer.appendChild(wordCloudElement);
+        }
+        
+        // Copy to clipboard functionality
+        document.getElementById('copyToClipboard').addEventListener('click', function() {
+            if (window.mentimeterContent) {
+                const textToCopy = JSON.stringify(window.mentimeterContent, null, 2);
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    alert('Content copied to clipboard!');
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                    alert('Failed to copy to clipboard. Please try again.');
+                });
+            }
+        });
+        
+        // Download JSON functionality
+        document.getElementById('downloadJson').addEventListener('click', function() {
+            if (window.mentimeterContent) {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.mentimeterContent, null, 2));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", "mentimeter_content.json");
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+            }
+        });
+    </script>
+</body>
+</html>

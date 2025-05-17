@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" x-data>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History | TeachPrep AI</title>
+    <link rel="stylesheet" href="../css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/divi-theme.css">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="../js/main.js" defer></script>
+    <style>
+        /* Divi-inspired theme */
+        :root {
+            --divi-primary: #f89406;
+            --divi-secondary: #0c71c3;
+            --divi-text: #666666;
+            --divi-heading: #333333;
+            --divi-light: #f5f5f5;
+            --divi-dark: #2b2b2b;
+            --divi-border: #e0e0e0;
+            --divi-shadow: rgba(0, 0, 0, 0.1);
+            --divi-accent: #7EBEC5;
+        }
+        
+        body {
+            font-family: 'Open Sans', Arial, sans-serif;
+            color: var(--divi-text);
+            background-color: #f9f9f9;
+            line-height: 1.7em;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .dark {
+            background-color: var(--divi-dark);
+            color: #e0e0e0;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-weight: 500;
+            color: var(--divi-heading);
+            margin-top: 0;
+        }
+        
+        .dark h1, .dark h2, .dark h3, 
+        .dark h4, .dark h5, .dark h6 {
+            color: white;
+        }
+        
+        .container {
+            width: 80%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header styles */
+        header {
+            background-color: white;
+            box-shadow: 0 1px 0 rgba(0,0,0,.1);
+            position: relative;
+            z-index: 999;
+        }
+        
+        .dark header {
+            background-color: var(--divi-dark);
+            box-shadow: 0 1px 0 rgba(255,255,255,.1);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+        }
+        
+        .font-retro {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-weight: 700;
+        }
+        
+        .text-retro-neon, .text-retro-cyan, .text-retro-purple, .text-retro-green, .text-retro-yellow {
+            color: var(--divi-primary);
+        }
+        
+        .glow {
+            text-shadow: 0 0 5px rgba(46, 163, 242, 0.5);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--divi-text);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 4px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--divi-primary);
+            background-color: rgba(46, 163, 242, 0.05);
+        }
+        
+        .dark .nav-links a {
+            color: #e0e0e0;
+        }
+        
+        .dark .nav-links a:hover {
+            background-color: rgba(46, 163, 242, 0.1);
+        }
+        
+        /* Content containers */
+        .retro-container, .retro-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--divi-shadow);
+            padding: 30px;
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .retro-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--divi-shadow);
+        }
+        
+        .dark .retro-container, .dark .retro-card {
+            background-color: #333;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .dark .retro-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: white;
+            border-top: 1px solid var(--divi-border);
+            padding: 3rem 0;
+            margin-top: 5rem;
+        }
+        
+        .dark footer {
+            background-color: var(--divi-dark);
+            border-top-color: #444;
+        }
+        
+        /* Toggle */
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+            background-color: #ccc;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .toggle:after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+        
+        .toggle:checked {
+            background-color: var(--divi-primary);
+        }
+        
+        .toggle:checked:after {
+            left: 24px;
+        }
+        
+        .toggle-sm {
+            width: 36px;
+            height: 18px;
+        }
+        
+        .toggle-sm:after {
+            width: 14px;
+            height: 14px;
+            top: 2px;
+            left: 2px;
+        }
+        
+        .toggle-sm:checked:after {
+            left: 20px;
+        }
+        
+        /* History-specific styles */
+        .retro-btn {
+            background-color: var(--divi-primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .retro-btn:hover {
+            background-color: var(--divi-secondary);
+        }
+        
+        .retro-btn.danger {
+            background-color: #f44336;
+        }
+        
+        .retro-btn.danger:hover {
+            background-color: #d32f2f;
+        }
+        
+        .retro-btn.download {
+            background-color: #4CAF50;
+        }
+        
+        .retro-btn.download:hover {
+            background-color: #388E3C;
+        }
+        
+        .retro-input {
+            background-color: rgba(46, 163, 242, 0.05);
+            border-radius: 4px;
+            padding: 15px;
+        }
+        
+        .dark .retro-input {
+            background-color: rgba(46, 163, 242, 0.1);
+        }
+        
+        .history-card {
+            cursor: pointer;
+        }
+        
+        .label-text {
+            font-size: 0.875rem;
+            color: var(--divi-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .value-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        /* Grid background */
+        .grid-bg {
+            background-image: linear-gradient(rgba(46, 163, 242, 0.03) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(46, 163, 242, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* Scanner line animation */
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, 
+                                      rgba(46, 163, 242, 0), 
+                                      rgba(46, 163, 242, 0.8),
+                                      rgba(46, 163, 242, 0));
+            z-index: 1000;
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+            100% {
+                top: 100%;
+            }
+        }
+        
+        /* Swap */
+        .swap {
+            position: relative;
+            display: inline-grid;
+            user-select: none;
+            place-content: center;
+        }
+        
+        .swap > * {
+            grid-column-start: 1;
+            grid-row-start: 1;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
+        
+        .swap input {
+            appearance: none;
+        }
+        
+        .swap .swap-on,
+        .swap .swap-off {
+            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+        
+        .swap input:not(:checked) ~ .swap-on {
+            opacity: 0;
+        }
+        
+        .swap input:checked ~ .swap-off {
+            opacity: 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 767px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-brand {
+                margin-bottom: 1rem;
+            }
+            
+            .nav-links {
+                margin-bottom: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metadata-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .history-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .metadata-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        [x-cloak] { 
+            display: none !important; 
+        }
+    </style>
+</head>
+<body class="grid-bg">
+    <div class="relative overflow-hidden">
+        <!-- Scanner line animation -->
+        <div class="scanner-line"></div>
+        
+        <!-- Navbar -->
+        <header class="border-b border-divi-border">
+            <nav class="container nav-container">
+                <div class="flex items-center nav-brand">
+                    <span class="text-retro-neon font-retro glow" style="font-size: 1.5rem;">TEACH</span>
+                    <span class="text-retro-orange font-retro" style="font-size: 1.5rem;">PREP</span>
+                    <span class="text-retro-purple font-retro" style="font-size: 1.5rem; margin-left: 0.25rem;">AI</span>
+                </div>
+                <div class="nav-links">
+                    <a href="../index.html" class="px-4 py-2 text-retro-text font-retro">HOME</a>
+                    <a href="generator.html" class="px-4 py-2 text-retro-text font-retro">GENERATOR</a>
+                    <a href="search.html" class="px-4 py-2 text-retro-text font-retro">SEARCH</a>
+                    <a href="history.html" class="px-4 py-2 text-retro-primary font-retro" style="color: var(--divi-primary); border-bottom: 2px solid var(--divi-primary);">HISTORY</a>
+                    <a href="about.html" class="px-4 py-2 text-retro-text font-retro">ABOUT</a>
+                </div>
+                
+                <div class="flex" style="gap: 1rem; align-items: center;">
+                    <!-- Theme toggle -->
+                    <div class="flex items-center">
+                        <span class="mr-2 text-retro-yellow">Light</span>
+                        <label class="swap">
+                            <input type="checkbox" checked @click="document.documentElement.classList.toggle('dark')"/>
+                            <div class="swap-on">🌙</div>
+                            <div class="swap-off">☀️</div>
+                        </label>
+                        <span class="ml-2 text-retro-yellow">Dark</span>
+                    </div>
+                    
+                    <!-- CRT effect toggle -->
+                    <div class="flex items-center">
+                        <span class="mr-2 text-retro-green">CRT</span>
+                        <input type="checkbox" id="crtToggle" class="toggle toggle-sm toggle-success" onchange="toggleCRTEffect()" />
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="container" style="padding: 3rem 1rem;" x-data="{
+            selectedItem: null,
+            
+            formatDate(dateString) {
+                const date = new Date(dateString);
+                return new Intl.DateTimeFormat('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(date);
+            },
+            
+            viewDetails(item) {
+                this.selectedItem = item;
+                
+                // Scroll to details section
+                setTimeout(() => {
+                    document.getElementById('detailsSection').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                }, 100);
+            },
+            
+            downloadPDF() {
+                const element = document.getElementById('detailsSection');
+                
+                // Add a temporary class for better PDF styling
+                element.classList.add('pdf-export');
+                
+                const opt = {
+                    margin: 1,
+                    filename: `${this.selectedItem.subject}-${this.selectedItem.topic}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
+                };
+                
+                html2pdf().set(opt).from(element).save();
+            },
+            
+            clearHistory() {
+                if (confirm('Are you sure you want to clear your generation history? This action cannot be undone.')) {
+                    $store.content.clearHistory();
+                    this.selectedItem = null;
+                }
+            }
+        }">
+            <h1 style="font-size: 2.5rem; margin-bottom: 2rem; text-align: center; color: var(--divi-primary);">Your Generation History</h1>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <button 
+                    @click="clearHistory" 
+                    class="retro-btn danger" 
+                    x-show="$store.content.history.length > 0"
+                >
+                    <i class="fas fa-trash-alt" style="margin-right: 0.5rem;"></i> Clear History
+                </button>
+                
+                <a href="generator.html" class="retro-btn">
+                    <i class="fas fa-plus-circle" style="margin-right: 0.5rem;"></i> Create New Lesson
+                </a>
+            </div>
+            
+            <div x-show="$store.content.history.length > 0" class="history-grid" style="display: grid; gap: 1.5rem;">
+                <template x-for="(item, index) in $store.content.history" :key="index">
+                    <div class="retro-card history-card" @click="viewDetails(item)" style="border-left: 4px solid var(--divi-primary);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--divi-primary);" x-text="item.topic"></h3>
+                            <span style="font-size: 0.875rem; color: #999;" x-text="formatDate(item.timestamp)"></span>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+                                <div>
+                                    <div class="label-text">Semester</div>
+                                    <div class="value-text" x-text="item.semester"></div>
+                                </div>
+                                <div>
+                                    <div class="label-text">Subject</div>
+                                    <div class="value-text" x-text="item.subject"></div>
+                                </div>
+                                <div>
+                                    <div class="label-text">Class</div>
+                                    <div class="value-text" x-text="item.classNumber"></div>
+                                </div>
+                                <div>
+                                    <div class="label-text">Difficulty</div>
+                                    <div class="value-text" x-text="item.difficultyLevel"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: right;">
+                            <button class="retro-btn" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                View Details <i class="fas fa-chevron-right" style="margin-left: 0.5rem;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
+            <div x-show="$store.content.history.length === 0" class="retro-container" style="text-align: center; padding: 3rem;">
+                <i class="fas fa-history" style="font-size: 3rem; margin-bottom: 1.5rem; color: var(--divi-primary);"></i>
+                <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">No History Yet</h2>
+                <p style="margin-bottom: 1.5rem;">Start generating lesson plans to see your history here!</p>
+                <a href="generator.html" class="retro-btn">
+                    <i class="fas fa-plus-circle" style="margin-right: 0.5rem;"></i> Create Your First Lesson
+                </a>
+            </div>
+            
+            <!-- Details Section -->
+            <div id="detailsSection" x-show="selectedItem" x-cloak style="margin-top: 4rem;">
+                <div class="retro-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2 style="font-size: 1.75rem; color: var(--divi-primary);" x-text="selectedItem?.subject + ' - ' + selectedItem?.topic"></h2>
+                        <button @click="downloadPDF" class="retro-btn download">
+                            <i class="fas fa-download" style="margin-right: 0.5rem;"></i> Download PDF
+                        </button>
+                    </div>
+                    
+                    <div class="metadata-grid" style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+                        <div class="retro-input" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                            <div class="label-text">Semester</div>
+                            <div class="value-text" x-text="selectedItem?.semester"></div>
+                        </div>
+                        <div class="retro-input" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                            <div class="label-text">Subject</div>
+                            <div class="value-text" x-text="selectedItem?.subject"></div>
+                        </div>
+                        <div class="retro-input" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                            <div class="label-text">Class</div>
+                            <div class="value-text" x-text="selectedItem?.classNumber"></div>
+                        </div>
+                        <div class="retro-input" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                            <div class="label-text">Difficulty</div>
+                            <div class="value-text" x-text="selectedItem?.difficultyLevel"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="resultContent" style="line-height: 1.6;" x-html="$store.content.formatContent(selectedItem?.result)"></div>
+                </div>
+            </div>
+        </main>
+        
+        <footer style="margin-top: 5rem; border-top: 1px solid var(--divi-primary); padding: 2rem 0;">
+            <div class="container">
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <p style="font-weight: 700; color: var(--divi-primary);">TEACHPREP AI</p>
+                        <p style="margin-top: 0.5rem;">&copy; 2025 Educational Technology Solutions</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1.5rem;">
+                        <a href="#" style="color: var(--divi-primary); transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" style="color: var(--divi-primary); transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" style="color: var(--divi-primary); transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

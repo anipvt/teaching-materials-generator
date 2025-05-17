@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" x-data>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Educational Resources - TeachPrep AI</title>
+    <link rel="stylesheet" href="../css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/divi-theme.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="../js/main.js" defer></script>
+    <style>
+        /* Divi-inspired theme */
+        :root {
+            --divi-primary: #f89406;
+            --divi-secondary: #0c71c3;
+            --divi-text: #666666;
+            --divi-heading: #333333;
+            --divi-light: #f5f5f5;
+            --divi-dark: #2b2b2b;
+            --divi-border: #e0e0e0;
+            --divi-shadow: rgba(0, 0, 0, 0.1);
+            --divi-accent: #7EBEC5;
+        }
+        
+        body {
+            font-family: 'Open Sans', Arial, sans-serif;
+            color: var(--divi-text);
+            background-color: #f9f9f9;
+            line-height: 1.7em;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .dark {
+            background-color: var(--divi-dark);
+            color: #e0e0e0;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-weight: 500;
+            color: var(--divi-heading);
+            margin-top: 0;
+        }
+        
+        .dark h1, .dark h2, .dark h3, 
+        .dark h4, .dark h5, .dark h6 {
+            color: white;
+        }
+        
+        .container {
+            width: 80%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header styles */
+        header {
+            background-color: white;
+            box-shadow: 0 1px 0 rgba(0,0,0,.1);
+            position: relative;
+            z-index: 999;
+        }
+        
+        .dark header {
+            background-color: var(--divi-dark);
+            box-shadow: 0 1px 0 rgba(255,255,255,.1);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+        }
+        
+        .font-retro {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-weight: 700;
+        }
+        
+        .text-retro-neon, .text-retro-cyan, .text-retro-purple, .text-retro-green, .text-retro-yellow {
+            color: var(--divi-primary);
+        }
+        
+        .glow {
+            text-shadow: 0 0 5px rgba(46, 163, 242, 0.5);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--divi-text);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 4px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--divi-primary);
+            background-color: rgba(46, 163, 242, 0.05);
+        }
+        
+        .dark .nav-links a {
+            color: #e0e0e0;
+        }
+        
+        .dark .nav-links a:hover {
+            background-color: rgba(46, 163, 242, 0.1);
+        }
+        
+        /* Content containers */
+        .retro-container, .retro-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--divi-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .retro-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--divi-shadow);
+        }
+        
+        .dark .retro-container, .dark .retro-card {
+            background-color: #333;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .dark .retro-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: white;
+            border-top: 1px solid var(--divi-border);
+            padding: 3rem 0;
+            margin-top: 5rem;
+        }
+        
+        .dark footer {
+            background-color: var(--divi-dark);
+            border-top-color: #444;
+        }
+        
+        /* Toggle */
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+            background-color: #ccc;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .toggle:after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+        
+        .toggle:checked {
+            background-color: var(--divi-primary);
+        }
+        
+        .toggle:checked:after {
+            left: 24px;
+        }
+        
+        .toggle-sm {
+            width: 36px;
+            height: 18px;
+        }
+        
+        .toggle-sm:after {
+            width: 14px;
+            height: 14px;
+            top: 2px;
+            left: 2px;
+        }
+        
+        .toggle-sm:checked:after {
+            left: 20px;
+        }
+        
+        /* Search-specific styles */
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border-radius: 4px;
+            border: 1px solid var(--divi-border);
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: white;
+            color: var(--divi-text);
+        }
+        
+        .dark .search-input {
+            background-color: #444;
+            border-color: #555;
+            color: white;
+        }
+        
+        .search-input:focus {
+            border-color: var(--divi-primary);
+            box-shadow: 0 0 0 2px rgba(46, 163, 242, 0.2);
+            outline: none;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--divi-text);
+        }
+        
+        .dark .search-icon {
+            color: #aaa;
+        }
+        
+        .search-button {
+            background-color: var(--divi-primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .search-button:hover {
+            background-color: var(--divi-secondary);
+        }
+        
+        .search-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .tag-button {
+            background-color: rgba(46, 163, 242, 0.1);
+            color: var(--divi-primary);
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0.25rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .tag-button:hover {
+            background-color: rgba(46, 163, 242, 0.2);
+        }
+        
+        .dark .tag-button {
+            background-color: rgba(46, 163, 242, 0.2);
+        }
+        
+        .dark .tag-button:hover {
+            background-color: rgba(46, 163, 242, 0.3);
+        }
+        
+        /* Grid background */
+        .grid-bg {
+            background-image: linear-gradient(rgba(46, 163, 242, 0.03) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(46, 163, 242, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* Scanner line animation */
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, 
+                                      rgba(46, 163, 242, 0), 
+                                      rgba(46, 163, 242, 0.8),
+                                      rgba(46, 163, 242, 0));
+            z-index: 1000;
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+            100% {
+                top: 100%;
+            }
+        }
+        
+        /* Swap */
+        .swap {
+            position: relative;
+            display: inline-grid;
+            user-select: none;
+            place-content: center;
+        }
+        
+        .swap > * {
+            grid-column-start: 1;
+            grid-row-start: 1;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
+        
+        .swap input {
+            appearance: none;
+        }
+        
+        .swap .swap-on,
+        .swap .swap-off {
+            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+        
+        .swap input:not(:checked) ~ .swap-on {
+            opacity: 0;
+        }
+        
+        .swap input:checked ~ .swap-off {
+            opacity: 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 767px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-brand {
+                margin-bottom: 1rem;
+            }
+            
+            .nav-links {
+                margin-bottom: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+        
+        [x-cloak] { 
+            display: none !important; 
+        }
+    </style>
+</head>
+<body class="grid-bg">
+    <div class="relative overflow-hidden">
+        <!-- Scanner line animation -->
+        <div class="scanner-line"></div>
+        
+        <!-- Navbar -->
+        <header class="border-b border-divi-border">
+            <nav class="container nav-container">
+                <div class="flex items-center nav-brand">
+                    <span class="text-retro-neon font-retro glow" style="font-size: 1.5rem;">TEACH</span>
+                    <span class="text-retro-orange font-retro" style="font-size: 1.5rem;">PREP</span>
+                    <span class="text-retro-purple font-retro" style="font-size: 1.5rem; margin-left: 0.25rem;">AI</span>
+                </div>
+                <div class="nav-links">
+                    <a href="../index.html" class="px-4 py-2 text-retro-text font-retro">HOME</a>
+                    <a href="generator.html" class="px-4 py-2 text-retro-text font-retro">GENERATOR</a>
+                    <a href="search.html" class="px-4 py-2 text-retro-primary font-retro" style="color: var(--divi-primary); border-bottom: 2px solid var(--divi-primary);">SEARCH</a>
+                    <a href="history.html" class="px-4 py-2 text-retro-text font-retro">HISTORY</a>
+                    <a href="about.html" class="px-4 py-2 text-retro-text font-retro">ABOUT</a>
+                </div>
+                
+                <div class="flex" style="gap: 1rem; align-items: center;">
+                    <!-- Theme toggle -->
+                    <div class="flex items-center">
+                        <span class="mr-2 text-retro-yellow">Light</span>
+                        <label class="swap">
+                            <input type="checkbox" checked @click="document.documentElement.classList.toggle('dark')"/>
+                            <div class="swap-on">🌙</div>
+                            <div class="swap-off">☀️</div>
+                        </label>
+                        <span class="ml-2 text-retro-yellow">Dark</span>
+                    </div>
+                    
+                    <!-- CRT effect toggle -->
+                    <div class="flex items-center">
+                        <span class="mr-2 text-retro-green">CRT</span>
+                        <input type="checkbox" id="crtToggle" class="toggle toggle-sm toggle-success" onchange="toggleCRTEffect()" />
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="container" style="padding: 3rem 1rem;" x-data="{
+            searchQuery: '',
+            searchResults: null,
+            loading: false,
+            recentSearches: [],
+            
+            init() {
+                // Load recent searches from localStorage
+                const savedSearches = localStorage.getItem('recentSearches');
+                if (savedSearches) {
+                    this.recentSearches = JSON.parse(savedSearches).slice(0, 5);
+                }
+            },
+            
+            async performSearch() {
+                if (!this.searchQuery) {
+                    alert('Please enter a search query');
+                    return;
+                }
+                
+                this.loading = true;
+                
+                try {
+                    const response = await fetch('/api/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            query: this.searchQuery
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    this.searchResults = data.content;
+                    
+                    // Update recent searches
+                    if (!this.recentSearches.includes(this.searchQuery)) {
+                        this.recentSearches.unshift(this.searchQuery);
+                        if (this.recentSearches.length > 5) {
+                            this.recentSearches.pop();
+                        }
+                        localStorage.setItem('recentSearches', JSON.stringify(this.recentSearches));
+                    }
+                    
+                    window.scrollTo({
+                        top: document.getElementById('resultsSection').offsetTop,
+                        behavior: 'smooth'
+                    });
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert(`Error: ${error.message}`);
+                } finally {
+                    this.loading = false;
+                }
+            },
+            
+            useRecentSearch(query) {
+                this.searchQuery = query;
+                this.performSearch();
+            }
+        }">
+            <h1 style="font-size: 2.5rem; margin-bottom: 2rem; text-align: center; color: var(--divi-primary);">Search Teaching Resources</h1>
+            
+            <div class="retro-container" style="max-width: 800px; margin: 0 auto;">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        x-model="searchQuery" 
+                        @keyup.enter="performSearch()"
+                        placeholder="Enter a subject, topic, or concept..." 
+                        class="search-input"
+                    >
+                    <button 
+                        @click="performSearch()"
+                        :disabled="loading" 
+                        class="search-button" 
+                        style="position: absolute; right: 0; top: 0; height: 100%;"
+                    >
+                        <template x-if="!loading">
+                            <span>Search</span>
+                        </template>
+                        <template x-if="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </template>
+                    </button>
+                </div>
+                
+                <!-- Recent Searches -->
+                <div x-show="recentSearches.length > 0" style="margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--divi-primary);">Recent Searches:</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <template x-for="search in recentSearches" :key="search">
+                            <button 
+                                @click="useRecentSearch(search)" 
+                                class="tag-button"
+                            >
+                                <i class="fas fa-history" style="margin-right: 0.5rem;"></i>
+                                <span x-text="search"></span>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+                
+                <!-- Popular Searches Suggestions -->
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--divi-primary);">Try searching for:</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <button @click="searchQuery = 'Python Programming'; performSearch()" class="tag-button">
+                            Python Programming
+                        </button>
+                        <button @click="searchQuery = 'Machine Learning'; performSearch()" class="tag-button">
+                            Machine Learning
+                        </button>
+                        <button @click="searchQuery = 'Web Development'; performSearch()" class="tag-button">
+                            Web Development
+                        </button>
+                        <button @click="searchQuery = 'Calculus'; performSearch()" class="tag-button">
+                            Calculus
+                        </button>
+                        <button @click="searchQuery = 'Data Structures'; performSearch()" class="tag-button">
+                            Data Structures
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Results Section -->
+            <div id="resultsSection" x-show="searchResults" x-cloak style="margin-top: 4rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <h2 style="font-size: 1.75rem; margin-bottom: 1.5rem; text-align: center; color: var(--divi-primary);">
+                    Resources for <span x-text="searchQuery" style="font-weight: 700;"></span>
+                </h2>
+                
+                <div class="retro-card" x-html="$store.content.formatContent(searchResults)"></div>
+            </div>
+        </main>
+        
+        <footer style="margin-top: 5rem; border-top: 1px solid var(--divi-primary); padding: 2rem 0;">
+            <div class="container">
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <p style="font-weight: 700; color: var(--divi-primary);">TEACHPREP AI</p>
+                        <p style="margin-top: 0.5rem;">&copy; 2025 Educational Technology Solutions</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1.5rem;">
+                        <a href="#" style="color: var(--divi-primary); transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" style="color: var(--divi-primary); transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" style="color: var(--divi-primary); transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
