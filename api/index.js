@@ -347,6 +347,35 @@ app.post('/api/search', async (req, res) => {
   }
 });
 
+// API route for generating PowerPoint content
+app.post('/api/generate-ppt', async (req, res) => {
+  try {
+    const { topicPlacards, videoReferences, researchReferences, metadata } = req.body;
+    
+    // Validate input
+    if (!topicPlacards || !Array.isArray(topicPlacards) || topicPlacards.length === 0) {
+      return res.status(400).json({ error: 'Topic placards are required' });
+    }
+
+    // For the deployed version, return the processed data for PowerPoint generation
+    // Here we're simply returning the input data with minimal processing
+    const processedTopics = topicPlacards.map((topic, index) => {
+      // Create a deep copy to avoid modifying the original
+      const processedTopic = JSON.parse(JSON.stringify(topic));
+      return processedTopic;
+    });
+
+    // Return the PowerPoint slide content with processed topics
+    res.json(processedTopics);
+  } catch (error) {
+    console.error('Error processing PPT data:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate PowerPoint content', 
+      details: error.message 
+    });
+  }
+});
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
