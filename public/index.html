@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="css/divi-theme.css">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
     <script src="js/main.js" defer></script>
+    <!-- Add Handlebars and PptxGenJS -->
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.8/dist/handlebars.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <style>
         /* Divi-inspired theme */
         :root {
@@ -453,6 +456,15 @@
                         <i class="fas fa-rocket mr-2"></i> Get Started Now
                     </a>
                 </div>
+            </div>
+            <!-- PPTX Generation Section -->
+            <div class="retro-card" style="margin: 3rem auto 2rem auto; max-width: 600px; text-align: center;">
+                <h2 class="font-display text-retro-cyan" style="font-size: 2rem;">Generate PowerPoint from Template</h2>
+                <p class="font-mono" style="margin-bottom: 1.5rem;">Click below to generate a beautiful PowerPoint from your JSON and Handlebars template.</p>
+                <button id="generatePPTXBtn" class="retro-btn" style="font-size: 1.2rem; padding: 0.75rem 2rem; margin-bottom: 1rem;">
+                    <i class="fas fa-file-powerpoint"></i> Generate PowerPoint from Template
+                </button>
+                <div id="pptxStatusMsg" class="font-mono" style="margin-top: 1rem; color: var(--divi-primary);"></div>
             </div>
         </main>
         

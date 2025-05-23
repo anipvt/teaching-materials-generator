@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Introduction to Photosynthesis",
+    "subtitle": "How plants make food",
+    "image": "https://example.com/photosynthesis.png",
+    "description": "Photosynthesis is the process by which green plants use sunlight to synthesize foods from carbon dioxide and water."
+  },
+  {
+    "title": "Key Ingredients",
+    "subtitle": "What plants need",
+    "image": "https://example.com/ingredients.png",
+    "description": "Plants require sunlight, water, and carbon dioxide for photosynthesis."
+  },
+  {
+    "title": "The Chemical Equation",
+    "subtitle": "Formula for photosynthesis",
+    "image": "https://example.com/equation.png",
+    "description": "6CO2 + 6H2O + sunlight → C6H12O6 + 6O2"
+  }
+]
